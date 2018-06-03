@@ -12,7 +12,7 @@ public class ExampleTest {
      * @param string
      * @return
      */
-    public String testString(String string) {
+    public static String testString(String string) {
         return string;
     }
 }
