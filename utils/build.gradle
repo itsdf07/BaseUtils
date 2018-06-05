@@ -2,6 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 
 publish {
+//    gradlew clean build bintrayUpload -PbintrayUser=itsdf07 -PbintrayKey=1c57219c87ea1a4db9edc945156def8accae236 -PdryRun=false
+//    https://bintray.com/itsdf07/maven
     userOrg = 'itsdf07'//bintray.com用户名
     groupId = 'com.itsdf07'//jcenter上的路径
     artifactId = 'utils'//项目名称
