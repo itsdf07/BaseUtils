@@ -1,9 +1,15 @@
 package com.itsdf07.utils;
 
+import android.content.Context;
+import android.os.Environment;
+import android.os.storage.StorageManager;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +20,7 @@ import java.util.List;
  */
 
 public class FileUtils {
+    public static String INNERSDPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "utilslog" + File.separator;
 
     /**
      * 删除垃圾文件完成后（不论成功与否，只要跳出删除）后的回调
@@ -343,5 +350,111 @@ public class FileUtils {
                 }
             }
         }).start();
+    }
+
+    /**----------------------------------------------------*/
+
+
+    /**
+     * 获取内置sd卡路径，<br/>
+     * 目前个人认为可以移除就是外卡，不能移除就是内卡，只经过大量试验，没有任何依据！此处需慎重！！！
+     *
+     * @param context
+     * @return 内卡路径
+     */
+    public static String getInnerSDPath(Context context) {
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= 12) {
+            try {
+                StorageManager manager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+                /************** StorageManager的方法 ***********************/
+                Method getVolumeList = StorageManager.class.getMethod("getVolumeList");
+                Method getVolumeState = StorageManager.class.getMethod("getVolumeState", String.class);
+
+                Object[] Volumes = (Object[]) getVolumeList.invoke(manager);
+                String state = null;
+                String path = null;
+
+                for (Object volume : Volumes) {
+                    /************** StorageVolume的方法 ***********************/
+                    Method getPath = volume.getClass().getMethod("getPath");
+                    path = (String) getPath.invoke(volume);
+                    state = (String) getVolumeState.invoke(manager, getPath.invoke(volume));
+
+                    /**
+                     * 是否可以移除(内置sdcard) TODO:
+                     * 目前个人认为可以移除就是外卡，不能移除就是内卡，只经过大量试验，没有任何依据！此处需慎重！！！
+                     */
+                    Method isRemovable = volume.getClass().getMethod("isRemovable");
+                    boolean removable = (Boolean) isRemovable.invoke(volume);
+
+                    if (null != path && null != state && state.equals(Environment.MEDIA_MOUNTED)) {
+                        if (false == removable) {
+                            return path;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                return "";
+            }
+        }
+        // 得到存储卡路径
+        File sdDir = null;
+        boolean sdCardExist = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED); // 判断sd卡
+        // 或可存储空间是否存在
+        if (sdCardExist) {
+            sdDir = Environment.getExternalStorageDirectory();// 获取sd卡或可存储空间的跟目录
+            return sdDir.toString();
+        }
+
+        return "";
+    }
+
+    /**
+     * 信息写入文件
+     *
+     * @param file    写入的文件
+     * @param content 写入的数据
+     * @param append  是否覆盖写入
+     * @return {@code true}: 信息写入成功<br>{@code false}: 信息写入失败
+     */
+    public static boolean write2File(File file, String content, boolean append) {
+        if (TextUtils.isEmpty(content)) {
+            content = "";
+        }
+        byte[] aData = content.getBytes();
+        return write2File(file, aData, append);
+    }
+
+    /**
+     * 信息写入文件
+     *
+     * @param file   写入的文件
+     * @param aData  写入的数据
+     * @param append 是否覆盖写入
+     * @return {@code true}: 信息写入成功<br>{@code false}: 信息写入失败
+     */
+    private static boolean write2File(File file, byte[] aData, boolean append) {
+        if (!createOrExistsFile(file)) {
+            //写入文件不存在且创建失败时return false
+            return false;
+        }
+        OutputStream out = null;
+        boolean ok = false;
+        try {
+            out = new FileOutputStream(file, append);
+            out.write(aData);
+            ok = true;
+        } catch (Exception e) {
+//            LogUtils.e(FROM + "File is written to failure ：", e);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return ok;
     }
 }
