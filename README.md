@@ -3,11 +3,11 @@
 ## 使用:Gradlew
 * 项目的build.gradle引入如下代码
 ```
-repositories {<br/>
-    jcenter()<br/>
-    maven {<br/>
-        url 'https://bintray.com/itsdf07/maven/'<br/>
-    }<br/>
+repositories {
+    jcenter()
+    maven {
+        url 'https://bintray.com/itsdf07/maven/'
+    }
 }
 ```
 * 依赖的module中的build.gradle中引入依赖
