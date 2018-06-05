@@ -5,13 +5,14 @@ import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.text.TextUtils;
 
+import com.itsdf07.alog.ALog;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @Description ：文件相关操作工具类
@@ -20,6 +21,7 @@ import java.util.List;
  */
 
 public class FileUtils {
+    private static final String TAG = "FileUtils";
     public static String INNERSDPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "utilslog" + File.separator;
 
     /**
@@ -222,7 +224,7 @@ public class FileUtils {
             String filePath = file.getPath() + System.currentTimeMillis();
             File oldFile = new File(filePath);
             if (rename(file, oldFile.getName())) {
-                delJunkFileInThread(oldFile, false, null);
+                delJunkFile(oldFile, false, true, null);
             } else {
                 return false;
             }
@@ -290,9 +292,9 @@ public class FileUtils {
      * @param needRename 是否需要重命名的方式来删除
      * @param callback   文件删除完成之后的回调，不需要的话可以传入null
      */
-    public static void delJunkFileInThread(final String path, final boolean needRename, final IDelJunkFileCallback callback) {
+    public static void delJunkFile(final String path, final boolean needRename, final boolean inThread, final IDelJunkFileCallback callback) {
         File file = getFileByPath(path);
-        delJunkFileInThread(file, needRename, callback);
+        delJunkFile(file, needRename, inThread, callback);
     }
 
     /**
@@ -302,13 +304,17 @@ public class FileUtils {
      * @param needRename 是否需要重命名的方式来删除
      * @param callback   文件删除完成之后的回调，不需要的话可以传入null
      */
-    public static void delJunkFileInThread(final File file, final boolean needRename, final IDelJunkFileCallback callback) {
+    public static void delJunkFile(final File file, final boolean needRename, final boolean inThread, final IDelJunkFileCallback callback) {
         if (!isFileExists(file)) {
             return;
         }
         ArrayList<File> files = new ArrayList<>();
         files.add(file);
-        delJunkFile(files, needRename, callback);
+        if (inThread) {
+            delJunkFileInThread(files, needRename, callback);
+        } else {
+            delJunkFile(files, needRename, callback);
+        }
     }
 
     /**
@@ -319,37 +325,53 @@ public class FileUtils {
      * @param needRename 是否需要重命名的方式来删除
      * @param callback   文件删除完成之后的回调，不需要的话可以传入null
      */
-    public static void delJunkFile(final ArrayList<File> files, final boolean needRename, final IDelJunkFileCallback callback) {
+    public static void delJunkFileInThread(final ArrayList<File> files, final boolean needRename, final IDelJunkFileCallback callback) {
         if (null == files || files.size() <= 0) {
             return;
         }
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<File> delFiles = new ArrayList<File>();
-                ArrayList<File> unDelFiles = new ArrayList<File>();
-                for (File file : files) {
-                    if (isFileExists(file)) {
-                        if (needRename) {
-                            File fileRename = new File(file.getPath() + System.currentTimeMillis());
-                            if (file.renameTo(fileRename)) {
-                                file = fileRename;
-                            }
-                        }
-                        boolean success = file.delete();
-                        if (success) {
-                            delFiles.add(file);
-                        } else {
-                            unDelFiles.add(file);
-                        }
-                    }
-                }
-                if (null != callback) {
-                    callback.delSuccess(delFiles);
-                    callback.delFailed(unDelFiles);
-                }
+                delJunkFile(files, needRename, callback);
             }
         }).start();
+    }
+
+    /**
+     * 在线程中删除【文件】
+     * */
+    /**
+     * @param files      需要删除的垃圾文件(多个)
+     * @param needRename 是否需要重命名的方式来删除
+     * @param callback   文件删除完成之后的回调，不需要的话可以传入null
+     */
+    private static void delJunkFile(final ArrayList<File> files, final boolean needRename, final IDelJunkFileCallback callback) {
+        if (null == files || files.size() <= 0) {
+            return;
+        }
+        ArrayList<File> delFiles = new ArrayList<File>();
+        ArrayList<File> unDelFiles = new ArrayList<File>();
+
+        for (File file : files) {
+            if (isFileExists(file)) {
+                if (needRename) {
+                    File fileRename = new File(file.getPath() + System.currentTimeMillis());
+                    if (file.renameTo(fileRename)) {
+                        file = fileRename;
+                    }
+                }
+                boolean success = file.delete();
+                if (success) {
+                    delFiles.add(file);
+                } else {
+                    unDelFiles.add(file);
+                }
+            }
+        }
+        if (null != callback) {
+            callback.delSuccess(delFiles);
+            callback.delFailed(unDelFiles);
+        }
     }
 
     /**----------------------------------------------------*/
@@ -446,12 +468,13 @@ public class FileUtils {
             out.write(aData);
             ok = true;
         } catch (Exception e) {
-//            LogUtils.e(FROM + "File is written to failure ：", e);
+            ALog.eTag(TAG, e, "log write failure!");
         } finally {
             if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
+                    ALog.eTag(TAG, e, "OutputStream close failure!");
                 }
             }
         }

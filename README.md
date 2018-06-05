@@ -9,3 +9,7 @@ repositories {<br/>
 }<br/>
 2、依赖的module中的build.gradle中引入依赖<br/>
 compile 'com.itsdf07:utils:1.0.0'<br/>
+
+提交记录：<br/>
+2018.06.05<br/>
+增加控制删除文件时是否在线程中执行
