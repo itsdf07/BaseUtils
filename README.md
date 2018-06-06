@@ -12,7 +12,7 @@ repositories {
 ```
 * 依赖的module中的build.gradle中引入依赖
 ```
-compile 'com.itsdf07:utils:1.0.0'
+compile 'com.itsdf07:utils:1.0.180606'
 ```
 
 ## 提交记录

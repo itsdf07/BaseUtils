@@ -7,8 +7,8 @@ publish {
     userOrg = 'itsdf07'//bintray.com用户名
     groupId = 'com.itsdf07'//jcenter上的路径
     artifactId = 'utils'//项目名称
-    publishVersion = '1.0.180605'//版本号
-    desc = 'add ALog utils'//描述，不重要
+    publishVersion = '1.0.180606'//版本号
+    desc = 'modify ALog utils'//描述，不重要
     website = 'https://github.com/itsdf07'//网站，最好有，不重要
 }
 android {
@@ -16,7 +16,7 @@ android {
     buildToolsVersion "26.0.1"
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -39,4 +39,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     testCompile 'junit:junit:4.12'
+
+    //崩溃平台Bulgy依赖
+    compile 'com.tencent.bugly:crashreport:latest.release'
+    //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.2.0
 }
