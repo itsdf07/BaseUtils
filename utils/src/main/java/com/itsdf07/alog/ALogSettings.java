@@ -1,6 +1,10 @@
 package com.itsdf07.alog;
 
-import com.itsdf07.utils.FileUtils;
+import android.os.Environment;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @Description ：It is used to determine log settings such as method count, thread info visibility
@@ -9,6 +13,14 @@ import com.itsdf07.utils.FileUtils;
  */
 
 public final class ALogSettings {
+    /**
+     * 日期格式
+     */
+    private static SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("MM-dd");
+    /**
+     * ALog的跟路径
+     */
+    private final String alogRoot = "ALOG";
     /**
      * Log的TAG
      */
@@ -20,10 +32,15 @@ public final class ALogSettings {
     private boolean isLog2Local = true;
 
     /**
-     * Log本地文件存储路径
+     * 默认Log本地文件存储路径
      * Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
      */
-    private String logFilePath = FileUtils.INNERSDPATH;
+    private final String defaultALogFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator;
+
+    /**
+     * 自定义Log本地存储路径：需指向写入文件，如:xxx/xxx/xxx.log
+     */
+    private String defineALogFilePath = "";
 
     /**
      * 是否打印线程名称
@@ -45,6 +62,10 @@ public final class ALogSettings {
     private int methodOffset = 0;
 
     private ALogAdapterImpl aLogAdapter;
+
+    public String getAlogRoot() {
+        return alogRoot;
+    }
 
     public String getTag() {
         return TAG;
@@ -86,20 +107,30 @@ public final class ALogSettings {
         return this;
     }
 
+    /**
+     * 默认Log路径Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "ALOG" +  File.separator
+     *
+     * @return
+     */
+    public String getDefaultALogFilePath() {
+        Date now = new Date();
+        String date = mSimpleDateFormat.format(now);
+        return defaultALogFilePath + getAlogRoot() + File.separator + date + ".log";
+    }
 
-    public String getLogFilePath() {
-        return logFilePath;
+    public String getDefineALogFilePath() {
+        return defineALogFilePath;
     }
 
     /**
-     * 设置Log存储路径
+     * 自定义Log本地存储路径：需指向写入文件
      *
-     * @param logFilePath
+     * @param defineALogFilePath xxx/xxx/xxx.log
      */
-    public void setLogFilePath(String logFilePath) {
-        this.logFilePath = logFilePath;
+    public ALogSettings setDefineALogFilePath(String defineALogFilePath) {
+        this.defineALogFilePath = defineALogFilePath;
+        return this;
     }
-
 
     /**
      * 是否显示线程名称：
@@ -156,8 +187,9 @@ public final class ALogSettings {
      *
      * @param methodCount
      */
-    public void setMethodCount(int methodCount) {
+    public ALogSettings setMethodCount(int methodCount) {
         this.methodCount = methodCount;
+        return this;
     }
 
     public int getMethodOffset() {
@@ -169,8 +201,9 @@ public final class ALogSettings {
      *
      * @param methodOffset
      */
-    public void setMethodOffset(int methodOffset) {
+    public ALogSettings setMethodOffset(int methodOffset) {
         this.methodOffset = methodOffset;
+        return this;
     }
 
     public ALogSettings setLogAdapter(ALogAdapterImpl adapter) {

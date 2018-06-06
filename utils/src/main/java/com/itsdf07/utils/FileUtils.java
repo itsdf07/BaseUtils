@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 public class FileUtils {
     private static final String TAG = "FileUtils";
-    public static String INNERSDPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "utilslog" + File.separator;
 
     /**
      * 删除垃圾文件完成后（不论成功与否，只要跳出删除）后的回调

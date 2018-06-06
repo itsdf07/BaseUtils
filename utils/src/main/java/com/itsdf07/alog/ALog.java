@@ -2,6 +2,14 @@ package com.itsdf07.alog;
 
 /**
  * @Description ：ALog 是基于{@link android.util.Log}的封装，但是使用更简单，信息查看更强大
+ * ALog.init()
+ * .setLogLevel(ALogLevel.FULL) //是否打印log
+ * .setTag("itsdf07") //自定义tag
+ * .setDefineALogFilePath("xxx/xxx/xxx.log") //自定义log存储路径
+ * .setLog2Local(true) //设置是否本地存储log记录
+ * .setShowThreadInfo(true)//是否显示线程信息
+ * .setMethodCount(2) //显示函数栈中的方法数
+ * .setMethodOffset(0); //控制从函数栈中的具体位置显示MethodCount数量的函数
  * @Author itsdf07
  * @Time 2018/6/4
  */

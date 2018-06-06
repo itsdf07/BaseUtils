@@ -444,15 +444,18 @@ public class ALoggerImpl implements IALogger {
         if (TextUtils.isEmpty(content)) {
             return;
         }
-        Date now = new Date();
-        String date = new SimpleDateFormat("MM-dd").format(now);
-        final String logFilePath = FileUtils.INNERSDPATH + date + ".txt";
+        //如果用户没有自定义log的存储路径，则使用默认
+        String logFilePath = getALogSettings().getDefineALogFilePath();
+        if (TextUtils.isEmpty(logFilePath)) {
+            logFilePath = getALogSettings().getDefaultALogFilePath();
+        }
         final File logFile = FileUtils.getFileByPath(logFilePath);
         if (!FileUtils.createOrExistsFile(logFile)) {
             return;
         }
+        Date now = new Date();
         String time = mSimpleDateFormat.format(now);
-        final String logContent = time + "：" + content;
+        final String logContent = time + ":" + content;
 
         Runnable syncRunnable = new Runnable() {
             @Override
