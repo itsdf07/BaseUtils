@@ -1,6 +1,7 @@
 package com.itsdf07.utils;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
@@ -99,7 +100,7 @@ public class FileUtils {
     }
 
     /**
-     * 判断【文件】是否存在
+     * 判断【文件/文件夹】是否存在
      *
      * @param path
      * @return {@code true}: 是<br>{@code false}: 否
@@ -110,7 +111,7 @@ public class FileUtils {
     }
 
     /**
-     * 判断【文件】是否存在
+     * 判断【文件/文件夹】是否存在
      *
      * @param file
      * @return {@code true}: 是<br>{@code false}: 否
@@ -436,7 +437,7 @@ public class FileUtils {
      * @return
      * @throws Exception
      */
-    private static long getFileSize(File file) throws Exception {
+    public static long getFileSize(File file) throws Exception {
         long size = 0;
         if (file.exists()) {
             FileInputStream fis = null;
@@ -480,7 +481,7 @@ public class FileUtils {
      * @param fileS
      * @return
      */
-    private static String FormetFileSize(long fileS) {
+    public static String FormetFileSize(long fileS) {
         DecimalFormat df = new DecimalFormat("#.00");
         String fileSizeString = "";
         String wrongSize = "0B";
@@ -494,7 +495,7 @@ public class FileUtils {
         } else if (fileS < (FILESCALE_1024 * FILESCALE_1024 * FILESCALE_1024)) {
             fileSizeString = df.format((double) fileS / (FILESCALE_1024 * FILESCALE_1024)) + "MB";
         } else {
-            fileSizeString = df.format((double) fileS / (FILESCALE_1024 + FILESCALE_1024 + FILESCALE_1024)) + "GB";
+            fileSizeString = df.format((double) fileS / (FILESCALE_1024 * FILESCALE_1024 * FILESCALE_1024)) + "GB";
         }
         return fileSizeString;
     }
@@ -506,7 +507,7 @@ public class FileUtils {
      * @param sizeType
      * @return
      */
-    private static double FormetFileSize(long fileS, int sizeType) {
+    public static double FormetFileSize(long fileS, int sizeType) {
         DecimalFormat df = new DecimalFormat("#.00");
         double fileSizeLong = 0;
         switch (sizeType) {
@@ -545,11 +546,17 @@ public class FileUtils {
      * @return
      */
 
-    public static long getAvailableInternalMemorySize() {
-        File path = Environment.getDataDirectory();
-        StatFs stat = new StatFs(path.getPath());
-        long blockSize = stat.getBlockSize();
-        long availableBlocks = stat.getAvailableBlocks();
+    public static long getAvailableMemorySize(String path) {
+        StatFs stat = new StatFs(path);
+        long blockSize;
+        long availableBlocks;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockSize = stat.getBlockSize();
+            availableBlocks = stat.getAvailableBlocks();
+        } else {
+            blockSize = stat.getBlockSizeLong();
+            availableBlocks = stat.getAvailableBlocksLong();
+        }
         return availableBlocks * blockSize;
     }
 
@@ -559,46 +566,19 @@ public class FileUtils {
      * @return
      */
 
-    public static long getTotalInternalMemorySize() {
-        File path = Environment.getDataDirectory();//Gets the Android data directory
-        StatFs stat = new StatFs(path.getPath());
-        long blockSize = stat.getBlockSize();      //每个block 占字节数
-        long totalBlocks = stat.getBlockCount();   //block总数
+    public static long getTotalMemorySize(String path) {
+        StatFs stat = new StatFs(path);
+
+        long blockSize;      //每个block 占字节数
+        long totalBlocks;   //block总数
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockSize = stat.getBlockSize();
+            totalBlocks = stat.getBlockCount();
+        } else {
+            blockSize = stat.getBlockSizeLong();
+            totalBlocks = stat.getBlockCountLong();
+        }
         return totalBlocks * blockSize;
-    }
-
-    /**
-     * 获取手机外部可用空间大小
-     *
-     * @return
-     */
-    static public long getAvailableExternalMemorySize() {
-        if (isExternalStorageAvailable()) {
-            File path = Environment.getExternalStorageDirectory();//获取SDCard根目录
-            StatFs stat = new StatFs(path.getPath());
-            long blockSize = stat.getBlockSize();
-            long availableBlocks = stat.getAvailableBlocks();
-            return availableBlocks * blockSize;
-        } else {
-            return -1;
-        }
-    }
-
-    /**
-     * 获取手机外部总空间大小
-     *
-     * @return
-     */
-    static public long getTotalExternalMemorySize() {
-        if (isExternalStorageAvailable()) {
-            File path = Environment.getExternalStorageDirectory(); //获取SDCard根目录
-            StatFs stat = new StatFs(path.getPath());
-            long blockSize = stat.getBlockSize();
-            long totalBlocks = stat.getBlockCount();
-            return totalBlocks * blockSize;
-        } else {
-            return -1;
-        }
     }
 
     /**----------------------------------------------------*/
