@@ -19,6 +19,6 @@ compile 'com.itsdf07:utils:1.0.180706.1'
 * 2018.06.05
     * 增加控制删除文件时是否在线程中执行
 * 2018.06.06
-        * 完善ALog可自定义存储路径、自定义tag
+    * 完善ALog可自定义存储路径、自定义tag
 * 2018.07.06
-        * 增加AppInfoUtils工具类
+    * 增加AppInfoUtils工具类
