@@ -22,3 +22,5 @@ compile 'com.itsdf07:utils:1.0.180706.1'
     * 完善ALog可自定义存储路径、自定义tag
 * 2018.07.06
     * 增加AppInfoUtils工具类
+* 2018.07.11
+    * 增加应用重启工具类：广播接收器RestartAppReceiver
