@@ -12,11 +12,15 @@ repositories {
 ```
 * 依赖的module中的build.gradle中引入依赖
 ```
-compile 'com.itsdf07:utils:1.0.180606'
+compile 'com.itsdf07:utils:1.0.180706.1'
 ```
 
 ## 提交记录
 * 2018.06.05
     * 增加控制删除文件时是否在线程中执行
 * 2018.06.06
-        * 完善ALog可自定义存储路径、自定义tag
+    * 完善ALog可自定义存储路径、自定义tag
+* 2018.07.06
+    * 增加AppInfoUtils工具类
+* 2018.07.11
+    * 增加应用重启工具类：广播接收器RestartAppReceiver

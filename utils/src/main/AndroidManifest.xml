@@ -6,9 +6,19 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <application android:allowBackup="true" android:label="@string/app_name"
-        android:supportsRtl="true">
+    <!--SIM卡权限-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+        <receiver android:name="com.itsdf07.receiver.RestartAppReceiver">
+            <intent-filter>
+                <action android:name="com.itsdf07.action.restart.app"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
