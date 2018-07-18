@@ -4,5 +4,14 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
+//解决新版gradle在java控制台输出乱码
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+//解决旧版gradle在java控制台输出乱码
+//tasks.withType(Compile) {
+//    options.encoding = "UTF-8"
+//}
+
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"

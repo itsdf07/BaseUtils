@@ -11,6 +11,12 @@ import com.itsdf07.utils.SimUtils;
 
 import java.util.ArrayList;
 
+import com.itsdf07.alog.ALog;
+import com.itsdf07.http.bean.BaseBean;
+import com.itsdf07.http.delegate.HttpCallbackImpl;
+import com.itsdf07.http.utils.HttpUtils;
+import com.itsdf07.http.utils.OkHttpRequest;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
@@ -37,8 +43,43 @@ public class MainActivity extends AppCompatActivity {
                 ALog.dTag(TAG, "Sim卡号:%s", SimUtils.getSimSerialNumber(MainActivity.this));
                 ALog.dTag(TAG, "Sim供货商:%s(代号:%s)", SimUtils.getSimOperatorName(MainActivity.this), SimUtils.getSimOperator(MainActivity.this));
                 ALog.dTag(TAG, "Sim运营商:%s(代号:%s)", SimUtils.getNetworkOperatorName(MainActivity.this), SimUtils.getNetworkOperator(MainActivity.this));
+                onHttpDebug();
             }
         });
 
+    }
+    private void onHttpDebug(){
+        String url = "http://121.199.44.234:9181/RchatMan/connectionDebug.do";
+        HttpUtils.postAsyn(url, "onHttpDebug", new HttpCallbackImpl<BaseBean>() {
+            @Override
+            public void onStart() {
+                ALog.dTag(OkHttpRequest.TAG_HTTP,"开始访问");
+            }
+
+            @Override
+            public void onSuccess(BaseBean baseBean) {
+                if (null == baseBean){
+                    ALog.dTag(OkHttpRequest.TAG_HTTP,"访问成功，但是解析后的数据体为空");
+                    return;
+                }
+                ALog.dTag(OkHttpRequest.TAG_HTTP,"访问成功,code:%s,desc:%s",baseBean.getCode(),baseBean.getDesc());
+            }
+
+            @Override
+            public void onFailureResult(BaseBean bean) {
+                if (null == bean){
+                    ALog.dTag(OkHttpRequest.TAG_HTTP,"访问失败，并且解析后的数据体为空");
+                    return;
+                }
+                ALog.dTag(OkHttpRequest.TAG_HTTP,"访问成功,code:%s,desc:%s",bean.getCode(),bean.getDesc());
+
+            }
+
+            @Override
+            public void onFinish() {
+                ALog.dTag(OkHttpRequest.TAG_HTTP,"访问结束");
+            }
+        });
+//
     }
 }
