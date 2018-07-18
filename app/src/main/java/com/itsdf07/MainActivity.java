@@ -48,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    /**
+     * http接口调试
+     */
     private void onHttpDebug(){
         String url = "http://121.199.44.234:9181/RchatMan/connectionDebug.do";
         HttpUtils.postAsyn(url, "onHttpDebug", new HttpCallbackImpl<BaseBean>() {
