@@ -7,8 +7,8 @@ publish {
     userOrg = 'itsdf07'//bintray.com用户名
     groupId = 'com.itsdf07'//jcenter上的路径
     artifactId = 'utils'//项目名称
-    publishVersion = '1.0.180706.1'//版本号
-    desc = 'add AppInfoUtils utils'//描述，不重要
+    publishVersion = '1.0.180708.1'//版本号
+    desc = 'add HttpUtils utils'//描述，不重要
     website = 'https://github.com/itsdf07'//网站，最好有，不重要
 }
 android {
