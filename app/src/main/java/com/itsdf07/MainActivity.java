@@ -1,13 +1,19 @@
 package com.itsdf07;
 
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Process;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
 import com.itsdf07.alog.ALog;
 import com.itsdf07.entity.AppInfo;
+import com.itsdf07.receiver.RestartAppReceiver;
 import com.itsdf07.utils.AppInfoUtils;
 import com.itsdf07.utils.SimUtils;
+
+import junit.framework.Test;
 
 import java.util.ArrayList;
 
@@ -24,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ALog.dTag(TAG,"myPid:::%s", Process.myPid());
         findViewById(R.id.btnTestClick).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,5 +92,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 //
+    }
+
+    private void restartApp(){
+        //关闭App并且重启
+        ALog.dTag(TAG,"myPid:%s", Process.myPid());
+        sendBroadcast(new Intent(RestartAppReceiver.BROADCASTRECEIVER_ACTION));
     }
 }
