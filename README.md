@@ -24,3 +24,5 @@ compile 'com.itsdf07:utils:1.0.180706.1'
     * 增加AppInfoUtils工具类
 * 2018.07.11
     * 增加应用重启工具类：广播接收器RestartAppReceiver
+* 2018.07.18
+    * 增加okhttp网络请求工具类:HttpUtils
