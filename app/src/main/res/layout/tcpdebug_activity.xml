@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etAddressIp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:hint="192.168.0.152" />
+
+        <EditText
+            android:id="@+id/etAddressPort"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="6666"
+            android:inputType="number" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnTcpConn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TCP连接" />
+
+        <Button
+            android:id="@+id/btnTcpDisConn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TCP断开" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnTcpSend"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="消息发送" />
+
+        <Button
+            android:id="@+id/btnTcpSendData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="调试数据发送" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/etMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入想要发送的内容" />
+
+    <TextView
+        android:id="@+id/tvMeg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="这里将为您展示消息"
+        android:scrollbars="vertical" />
+</LinearLayout>

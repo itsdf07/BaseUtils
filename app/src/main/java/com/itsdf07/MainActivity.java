@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.itsdf07.alog.ALog;
+import com.itsdf07.debug.TcpDebugActivity;
 import com.itsdf07.entity.AppInfo;
 import com.itsdf07.receiver.RestartAppReceiver;
 import com.itsdf07.utils.AppInfoUtils;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ALog.dTag(TAG,"myPid:::%s", Process.myPid());
+        ALog.dTag(TAG, "myPid:::%s", Process.myPid());
         findViewById(R.id.btnTestClick).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,50 +54,56 @@ public class MainActivity extends AppCompatActivity {
                 onHttpDebug();
             }
         });
+        findViewById(R.id.btnTcpDebug).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, TcpDebugActivity.class));
+            }
+        });
 
     }
 
     /**
      * http接口调试
      */
-    private void onHttpDebug(){
+    private void onHttpDebug() {
         String url = "http://121.199.44.234:9181/RchatMan/connectionDebug.do";
         HttpUtils.postAsyn(url, "onHttpDebug", new HttpCallbackImpl<BaseBean>() {
             @Override
             public void onStart() {
-                ALog.dTag(OkHttpRequest.TAG_HTTP,"开始访问");
+                ALog.dTag(OkHttpRequest.TAG_HTTP, "开始访问");
             }
 
             @Override
             public void onSuccess(BaseBean baseBean) {
-                if (null == baseBean){
-                    ALog.dTag(OkHttpRequest.TAG_HTTP,"访问成功，但是解析后的数据体为空");
+                if (null == baseBean) {
+                    ALog.dTag(OkHttpRequest.TAG_HTTP, "访问成功，但是解析后的数据体为空");
                     return;
                 }
-                ALog.dTag(OkHttpRequest.TAG_HTTP,"访问成功,code:%s,desc:%s",baseBean.getCode(),baseBean.getDesc());
+                ALog.dTag(OkHttpRequest.TAG_HTTP, "访问成功,code:%s,desc:%s", baseBean.getCode(), baseBean.getDesc());
             }
 
             @Override
             public void onFailureResult(BaseBean bean) {
-                if (null == bean){
-                    ALog.dTag(OkHttpRequest.TAG_HTTP,"访问失败，并且解析后的数据体为空");
+                if (null == bean) {
+                    ALog.dTag(OkHttpRequest.TAG_HTTP, "访问失败，并且解析后的数据体为空");
                     return;
                 }
-                ALog.dTag(OkHttpRequest.TAG_HTTP,"访问成功,code:%s,desc:%s",bean.getCode(),bean.getDesc());
+                ALog.dTag(OkHttpRequest.TAG_HTTP, "访问成功,code:%s,desc:%s", bean.getCode(), bean.getDesc());
 
             }
 
             @Override
             public void onFinish() {
-                ALog.dTag(OkHttpRequest.TAG_HTTP,"访问结束");
+                ALog.dTag(OkHttpRequest.TAG_HTTP, "访问结束");
             }
         });
 //
     }
 
-    private void restartApp(){
+    private void restartApp() {
         //关闭App并且重启
-        ALog.dTag(TAG,"myPid:%s", Process.myPid());
+        ALog.dTag(TAG, "myPid:%s", Process.myPid());
         sendBroadcast(new Intent(RestartAppReceiver.BROADCASTRECEIVER_ACTION));
     }
 }
