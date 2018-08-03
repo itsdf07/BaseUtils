@@ -8,9 +8,10 @@ package com.itsdf07.http.delegate;
 public interface IHttpCallback {
     /**
      * @param result
+     * @param isDecode
      * @Description http成功响应
      */
-    void onSuccess(String result);
+    void onSuccess(String result, boolean isDecode);
 
     /**
      * @param code

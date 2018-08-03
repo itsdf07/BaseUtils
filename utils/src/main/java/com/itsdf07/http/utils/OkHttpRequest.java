@@ -57,16 +57,17 @@ public class OkHttpRequest {
      *
      * @param result
      * @param callback
+     * @param isDecode
      */
-    public static void sendSuccessResultCallback(final String result, final HttpCallbackImpl callback) {
+    public static void sendSuccessResultCallback(final String result, final HttpCallbackImpl callback, final boolean isDecode) {
+        ALog.dTag(TAG_HTTP, "Http result:", result);
         if (callback == null) {
             return;
         }
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                ALog.dTag(TAG_HTTP, "result:", result);
-                callback.onSuccess(result);
+                callback.onSuccess(result, isDecode);
                 callback.onFinish();
             }
         });
@@ -81,13 +82,13 @@ public class OkHttpRequest {
      * @param callback
      */
     public static void sendFailResultCallback(final String code, final String message, final HttpCallbackImpl callback) {
+        ALog.eTag(TAG_HTTP, "Http onFailure -> code:%s,message:%s", code, message);
         if (callback == null) {
             return;
         }
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                ALog.dTag(TAG_HTTP, "code:%s,message:%s", code, message);
                 callback.onFailure(code, NetErrCode.translateNetCode(code));
                 callback.onFinish();
             }
@@ -129,11 +130,11 @@ public class OkHttpRequest {
      * @Description Request对象
      */
     public static Request builderRequest(HttpMethodType methodType, String url, Map<String, String> params, String json) {
-        Request.Builder builder = new Request.Builder()
-                .url(url);
-
+        Request.Builder builder = new Request.Builder().url(url);
+        ALog.dTag(TAG_HTTP, "HttpMethodType:%s->url:%s", methodType.name(), url);
         if (methodType == HttpMethodType.POST) {
             if (json != null) {
+                ALog.dTag(TAG_HTTP, "body(json):%s", json);
                 RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
                 builder.post(body);
             } else {
@@ -143,7 +144,6 @@ public class OkHttpRequest {
         } else if (methodType == HttpMethodType.GET) {
             builder.get();
         }
-
         return builder.build();
     }
 
@@ -172,22 +172,27 @@ public class OkHttpRequest {
      */
     private static RequestBody builderFormData(Map<String, String> params) {
         FormBody.Builder builder = new FormBody.Builder();
-
+        String body = "";
         if (params != null && !params.isEmpty()) {
             for (String key : params.keySet()) {
-                builder.add(key, params.get(key));
+                String value = params.get(key);
+                builder.add(key, value);
+                body += key + ":" + value + ",";
             }
         }
-
+        ALog.dTag(TAG_HTTP, "body(map):%s", body);
         return builder.build();
     }
 
     /**
+     * 默认不需要对返回的数据解密
+     *
      * @param request  Request对象
      * @param callback 请求回调
+     * @param isDecode 是否需要解密
      * @Description 异步请求
      */
-    public static void doEnqueue(final Request request, final HttpCallbackImpl callback) {
+    public static void doEnqueue(final Request request, final HttpCallbackImpl callback, final boolean isDecode) {
         if (null != callback) {
             callback.onStart();
         }
@@ -195,32 +200,32 @@ public class OkHttpRequest {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                sendFailResultCallback(NetErrCode.ERR_FAILURE, e.getMessage(), callback);
+                sendFailResultCallback(NetErrCode.ERR_1_FAILURE, e.getMessage(), callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (null == response) {
-                    sendFailResultCallback(NetErrCode.ERR_FAILURE_RESPONSE_NULL, "The Response obj is null", callback);
+                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_NULL, "The Response obj is null", callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetErrCode.ERR_FAILURE_RESPONSE_NULL, "The Response body is null", callback);
+                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_NULL, "The Response body is null", callback);
                     return;
                 }
                 String result = response.body().string();
                 if (TextUtils.isEmpty(result)) {
-                    sendFailResultCallback(NetErrCode.ERR_FAILURE_RESPONSE_PARSE, "The Response content null", callback);
+                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_PARSE, "The Response content null", callback);
                     return;
                 }
                 try {
                     if (response.isSuccessful()) {
-                        sendSuccessResultCallback(result, callback);
+                        sendSuccessResultCallback(result, callback, isDecode);
                     } else {
                         sendFailResultCallback(response.code() + "", response.message(), callback);
                     }
                 } catch (Exception e) {
-                    sendFailResultCallback(NetErrCode.ERR_FAILURE_RESPONSE_PARSE, e.getMessage(), callback);
+                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_PARSE, e.getMessage(), callback);
                 }
             }
         });
@@ -244,17 +249,17 @@ public class OkHttpRequest {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                sendFailResultCallback(NetErrCode.ERR_FAILURE, e.getMessage(), callback);
+                sendFailResultCallback(NetErrCode.ERR_1_FAILURE, e.getMessage(), callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) {
                 if (null == response) {
-                    sendFailResultCallback(NetErrCode.ERR_FAILURE_RESPONSE_NULL, "The Response obj is null", callback);
+                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_NULL, "The Response obj is null", callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetErrCode.ERR_FAILURE_RESPONSE_NULL, "The Response body is null", callback);
+                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_NULL, "The Response body is null", callback);
                     return;
                 }
                 InputStream inputStream = response.body().byteStream();
@@ -284,9 +289,9 @@ public class OkHttpRequest {
                     sendProgressResultCallback(currentTotalLen, totalLen, callback, true);
                 } catch (IOException e) {
                     if (e instanceof SocketException) {
-                        sendFailResultCallback(NetErrCode.ERR_FAILURE_RESPONSE_CANCLE, e.getMessage(), callback);
+                        sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_CANCLE, e.getMessage(), callback);
                     } else {
-                        sendFailResultCallback(NetErrCode.ERR_FAILURE_RESPONSE_PARSE, e.getMessage(), callback);
+                        sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_PARSE, e.getMessage(), callback);
                     }
                 } finally {
                     if (inputStream != null) {

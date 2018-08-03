@@ -20,18 +20,25 @@ import java.lang.reflect.Type;
 public abstract class HttpCallbackImpl<Result extends BaseBean> implements IHttpCallback {
 
     @Override
-    public void onSuccess(String result) {
-        ALog.dTag(OkHttpRequest.TAG_HTTP, "onSuccess : result = %s", result);
+    public void onSuccess(String result, boolean isDecode) {
+        ALog.dTag(OkHttpRequest.TAG_HTTP, "isDecode:%s,result:%s", isDecode, result);
+        if (isDecode) {
+            //如果数据需要解密，则接收到后不处理直接抛出
+            BaseBean bean = new BaseBean();
+            bean.setEncrptyData(result);
+            onSuccess((Result) bean);
+            return;
+        }
         Gson gson = new Gson();
-        Class<?> clz = analysisClassInfo(this);
         try {
+            Class<?> clz = analysisClassInfo(this);
             Result bean = (Result) gson.fromJson(result, clz);
             if (null == bean) {
-                onFailure(NetErrCode.ERR_GSON_RESULT_FAILURE, NetErrCode.translateNetCode(NetErrCode.ERR_GSON_RESULT_FAILURE));
+                onFailure(NetErrCode.ERR_2_GSON_RESULT, NetErrCode.translateNetCode(NetErrCode.ERR_2_GSON_RESULT));
                 return;
             }
             if (TextUtils.isEmpty(bean.getCode())) {
-                onFailure(NetErrCode.ERR_CODE_NULL_FAILURE, NetErrCode.translateNetCode(NetErrCode.ERR_CODE_NULL_FAILURE));
+                onFailure(NetErrCode.ERR_2_CODE_NULL, NetErrCode.translateNetCode(NetErrCode.ERR_2_CODE_NULL));
                 return;
             }
             if (bean.getCode().equals("200")) {
@@ -40,7 +47,10 @@ public abstract class HttpCallbackImpl<Result extends BaseBean> implements IHttp
                 onFailure(bean.getCode(), bean.getDesc());
             }
         } catch (JsonSyntaxException e) {
-            onFailure(NetErrCode.ERR_GSON_RESULT_FAILURE, NetErrCode.translateNetCode(NetErrCode.ERR_GSON_RESULT_FAILURE));
+            onFailure(NetErrCode.ERR_2_GSON_RESULT, NetErrCode.translateNetCode(NetErrCode.ERR_2_GSON_RESULT));
+        } catch (Exception e) {
+            onFailure(NetErrCode.ERR_2_GSON_RESULT, NetErrCode.translateNetCode(NetErrCode.ERR_2_GSON_RESULT));
+
         }
     }
 

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -52,7 +51,6 @@ public class HttpUtils {
         return okHttpClient;
     }
 
-
     /**--------------------    异步数据请求    --------------------**/
     /**
      * @param url      请求地址
@@ -61,27 +59,23 @@ public class HttpUtils {
      * @Description POST提交JSON数据
      */
     public static void postAsyn(String url, String json, HttpCallbackImpl callback) {
-        ALog.dTag(OkHttpRequest.TAG_HTTP, "url:%s，body:%s", url, json);
-        if (TextUtils.isEmpty(json)) {
-            return;
-        }
-        Request request = OkHttpRequest.builderRequest(OkHttpRequest.HttpMethodType.POST, url, null, json);
-        OkHttpRequest.doEnqueue(request, callback);
+        postAsyn(url, json, callback, false);
     }
 
     /**
-     * 此接口不能加密
-     *
      * @param url      请求地址
      * @param json     json数据格式
      * @param callback 请求回调
+     * @param isDecode 返回的数据是否需要解密
      * @Description POST提交JSON数据
      */
-
-    public static void postAsyn(String url, String json, HttpCallbackImpl callback, MediaType type) {
-        ALog.dTag(OkHttpRequest.TAG_HTTP, "url:%s，body:%s", url, json);
-        Request request = OkHttpRequest.builderRequest(OkHttpRequest.HttpMethodType.POST, url, null, json, type);
-        OkHttpRequest.doEnqueue(request, callback);
+    public static void postAsyn(String url, String json, HttpCallbackImpl callback, boolean isDecode) {
+        if (TextUtils.isEmpty(json)) {
+            ALog.eTag(OkHttpRequest.TAG_HTTP, "Invalid request data.");
+            return;
+        }
+        Request request = OkHttpRequest.builderRequest(OkHttpRequest.HttpMethodType.POST, url, null, json);
+        OkHttpRequest.doEnqueue(request, callback, isDecode);
     }
 
     /**
@@ -91,8 +85,23 @@ public class HttpUtils {
      * @Description POST请求
      */
     public static void postAsyn(String url, Map<String, String> params, HttpCallbackImpl callback) {
+        postAsyn(url, params, callback, false);
+    }
+
+    /**
+     * @param url      请求地址
+     * @param params   请求参数
+     * @param callback 请求回调
+     * @param isDecode 返回的数据是否需要解密
+     * @Description POST请求
+     */
+    public static void postAsyn(String url, Map<String, String> params, HttpCallbackImpl callback, boolean isDecode) {
+        if (params == null || params.isEmpty()) {
+            ALog.eTag(OkHttpRequest.TAG_HTTP, "Invalid request data.");
+            return;
+        }
         Request request = OkHttpRequest.builderRequest(OkHttpRequest.HttpMethodType.POST, url, params, null);
-        OkHttpRequest.doEnqueue(request, callback);
+        OkHttpRequest.doEnqueue(request, callback, isDecode);
     }
 
     /**--------------------    文件下载    --------------------**/

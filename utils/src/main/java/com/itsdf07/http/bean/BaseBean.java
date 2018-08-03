@@ -1,10 +1,6 @@
 package com.itsdf07.http.bean;
 
 /**
- * Created by itsdf07 on 2017/7/20.
- */
-
-/**
  * @Description ：网络应答报文基础类
  * @Author itsdf07
  * @Time 2018/07/18
@@ -23,6 +19,10 @@ public class BaseBean {
      * 应答码描述
      */
     private String desc;
+    /**
+     * 加密数据
+     */
+    private String encrptyData;
 
     public String getCode() {
         return code;
@@ -38,5 +38,13 @@ public class BaseBean {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public String getEncrptyData() {
+        return encrptyData;
+    }
+
+    public void setEncrptyData(String encrptyData) {
+        this.encrptyData = encrptyData;
     }
 }

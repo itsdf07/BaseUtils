@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
      * http接口调试
      */
     private void onHttpDebug() {
-        String url = "http://121.199.44.234:9181/RchatMan/connectionDebug.do";
+        String url = "http://poc.rchat.com.cn:9181/RchatMan/connectionDebug.do";
         HttpUtils.postAsyn(url, "onHttpDebug", new HttpCallbackImpl<BaseBean>() {
             @Override
             public void onStart() {
@@ -76,19 +76,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(BaseBean baseBean) {
-                if (null == baseBean) {
-                    ALog.dTag(OkHttpRequest.TAG_HTTP, "访问成功，但是解析后的数据体为空");
-                    return;
-                }
                 ALog.dTag(OkHttpRequest.TAG_HTTP, "访问成功,code:%s,desc:%s", baseBean.getCode(), baseBean.getDesc());
             }
 
             @Override
             public void onFailureResult(BaseBean bean) {
-                if (null == bean) {
-                    ALog.dTag(OkHttpRequest.TAG_HTTP, "访问失败，并且解析后的数据体为空");
-                    return;
-                }
                 ALog.dTag(OkHttpRequest.TAG_HTTP, "访问成功,code:%s,desc:%s", bean.getCode(), bean.getDesc());
 
             }
