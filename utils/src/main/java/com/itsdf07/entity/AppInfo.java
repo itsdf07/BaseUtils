@@ -1,15 +1,27 @@
 package com.itsdf07.entity;
 
 /**
- * @Description:
+ * @Description: App信息
  * @Author itsdf07
  * @Time 2018/7/6 11:31
  */
 
 public class AppInfo {
+    /**
+     * App名称
+     */
     private String appName = "";
+    /**
+     * App包名
+     */
     private String packageName = "";
+    /**
+     * APP发布版本
+     */
     private String versionName = "";
+    /**
+     * APP代码的相对版本
+     */
     private int versionCode = 1;
 
     public String getAppName() {

@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.text.TextUtils;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import com.itsdf07.alog.ALog;
 import com.itsdf07.entity.AppInfo;
@@ -32,11 +33,10 @@ public class AppInfoUtils {
             ALog.e("带入的content参数为null");
             return -1;
         }
-        PackageManager packageManager = context.getPackageManager();
-        PackageInfo packageInfo;
         int versionCode = -1;
         try {
-            packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
             versionCode = packageInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -55,11 +55,11 @@ public class AppInfoUtils {
             ALog.e("带入的content参数为null");
             return "";
         }
-        PackageManager packageManager = context.getPackageManager();
-        PackageInfo packageInfo;
+
         String versionName = "";
         try {
-            packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
             versionName = packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -67,11 +67,80 @@ public class AppInfoUtils {
         return versionName;
     }
 
+
+    /**
+     * 获取应用程序名称
+     */
+    public static String getAppName(Context context) {
+        if (null == context) {
+            ALog.e("带入的content参数为null");
+            return "";
+        }
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            int labelRes = packageInfo.applicationInfo.labelRes;
+            return context.getResources().getString(labelRes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * [获取应用程序版本名称信息]
+     *
+     * @param context
+     * @return 当前应用的版本名称
+     */
+    public static String getPackageName(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.packageName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取图标 bitmap
+     *
+     * @param context
+     */
+    public static Bitmap getIconBitmap(Context context) {
+        BitmapDrawable bd = (BitmapDrawable) getIconDrawable(context);
+        Bitmap bm = bd.getBitmap();
+        return bm;
+    }
+
+    /**
+     * 获取图标 Drawable
+     *
+     * @param context
+     */
+    public static Drawable getIconDrawable(Context context) {
+        PackageManager packageManager = null;
+        ApplicationInfo applicationInfo = null;
+        try {
+            packageManager = context.getApplicationContext().getPackageManager();
+            applicationInfo = packageManager.getApplicationInfo(
+                    context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            applicationInfo = null;
+        }
+        Drawable d = packageManager.getApplicationIcon(applicationInfo); //xxx根据自己的情况获取drawable
+        return d;
+    }
+
+
     /**
      * 获取application中指定的meta-data。本例中，调用方法时key如：UMENG_CHANNEL
      *
      * @return 如果没有获取成功(没有对应值，或者异常)，则返回值为空
      */
+
     public static String getAppMetaData(Context context, String key) {
         if (null == context) {
             ALog.e("带入的content参数为null");
@@ -102,7 +171,7 @@ public class AppInfoUtils {
      * @param context
      * @return 已安装应用列表，异常时返回 null
      */
-    public static ArrayList<AppInfo> getInstallApps(@NonNull Context context) {
+    public static ArrayList<AppInfo> getInstallApps(Context context) {
         ArrayList<AppInfo> infos = new ArrayList<>();
         if (null == context) {
             ALog.e("带入的content参数为null");
@@ -130,7 +199,7 @@ public class AppInfoUtils {
      * @param packageName 对应的app包名
      * @return 查找到的安装应用信息，异常、无结果时返回 null
      */
-    public static AppInfo getInstallApp(@NonNull Context context, String packageName) {
+    public static AppInfo getInstallApp(Context context, String packageName) {
         AppInfo appInfo = null;
         if (null == context) {
             ALog.e("带入的content参数为null");
