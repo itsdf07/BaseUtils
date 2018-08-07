@@ -12,7 +12,15 @@ repositories {
 ```
 * 依赖的module中的build.gradle中引入依赖
 ```
-compile 'com.itsdf07:utils:1.0.180706.1'
+compile('com.itsdf07:utils:1.180803.1')
+            {
+                //去掉重复依赖的包
+                exclude group: 'com.android.support'
+                exclude group: 'junit'
+                exclude group: 'com.squareup.okhttp3'
+                exclude group: 'com.squareup.okio'
+                exclude group: 'com.google.code.gson'
+            }
 ```
 
 ## 提交记录
