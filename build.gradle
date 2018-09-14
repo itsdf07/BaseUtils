@@ -25,6 +25,8 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+//Execution failed for task ':utils:mavenAndroidJavadocs'.
+//        > Javadoc generation failed. Generated Javadoc options file (useful for troubleshooting): 'D:\itsdf07\Workspace\Android\demo\AndroidHttpUtils\okhttp3\build\tmp\mavenAndroidJavadocs\javadoc.options'
 //Javadoc generation failed. Generated Javadoc options file (useful for troubleshooting)
 //window 默认检测Javadocs时的编码格式为GBK
 tasks.getByPath(":utils:mavenAndroidJavadocs").enabled = false
