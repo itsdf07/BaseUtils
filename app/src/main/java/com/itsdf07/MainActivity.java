@@ -1,28 +1,22 @@
 package com.itsdf07;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.os.Process;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
 import com.itsdf07.alog.ALog;
-import com.itsdf07.debug.TcpDebugActivity;
 import com.itsdf07.entity.AppInfo;
-import com.itsdf07.receiver.RestartAppReceiver;
+import com.itsdf07.okhttp3.OkHttp3Request;
+import com.itsdf07.okhttp3.OkHttp3Utils;
+import com.itsdf07.okhttp3.bean.BaseBean;
+import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
 import com.itsdf07.utils.AppInfoUtils;
 import com.itsdf07.utils.SimUtils;
 
-import junit.framework.Test;
-
 import java.util.ArrayList;
 
-import com.itsdf07.alog.ALog;
-import com.itsdf07.http.bean.BaseBean;
-import com.itsdf07.http.delegate.HttpCallbackImpl;
-import com.itsdf07.http.utils.HttpUtils;
-import com.itsdf07.http.utils.OkHttpRequest;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -54,12 +48,6 @@ public class MainActivity extends AppCompatActivity {
                 onHttpDebug();
             }
         });
-        findViewById(R.id.btnTcpDebug).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, TcpDebugActivity.class));
-            }
-        });
 
     }
 
@@ -68,34 +56,28 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onHttpDebug() {
         String url = "http://poc.rchat.com.cn:9181/RchatMan/connectionDebug.do";
-        HttpUtils.postAsyn(url, "onHttpDebug", new HttpCallbackImpl<BaseBean>() {
+        OkHttp3Utils.postAsyn(url, "onHttpDebug", new OkHttp3CallbackImpl<BaseBean>() {
             @Override
             public void onStart() {
-                ALog.dTag(OkHttpRequest.TAG_HTTP, "开始访问");
+                ALog.dTag(OkHttp3Request.TAG_HTTP, "开始访问");
             }
 
             @Override
             public void onSuccess(BaseBean baseBean) {
-                ALog.dTag(OkHttpRequest.TAG_HTTP, "访问成功,code:%s,desc:%s", baseBean.getCode(), baseBean.getDesc());
+                ALog.dTag(OkHttp3Request.TAG_HTTP, "访问成功,code:%s,desc:%s", baseBean.getCode(), baseBean.getDesc());
             }
 
             @Override
-            public void onFailureResult(BaseBean bean) {
-                ALog.dTag(OkHttpRequest.TAG_HTTP, "访问成功,code:%s,desc:%s", bean.getCode(), bean.getDesc());
+            public void onFailed(BaseBean bean) {
+                ALog.dTag(OkHttp3Request.TAG_HTTP, "访问成功,code:%s,desc:%s", bean.getCode(), bean.getDesc());
 
             }
 
             @Override
             public void onFinish() {
-                ALog.dTag(OkHttpRequest.TAG_HTTP, "访问结束");
+                ALog.dTag(OkHttp3Request.TAG_HTTP, "访问结束");
             }
         });
 //
-    }
-
-    private void restartApp() {
-        //关闭App并且重启
-        ALog.dTag(TAG, "myPid:%s", Process.myPid());
-        sendBroadcast(new Intent(RestartAppReceiver.BROADCASTRECEIVER_ACTION));
     }
 }

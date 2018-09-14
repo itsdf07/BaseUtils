@@ -1,10 +1,10 @@
-package com.itsdf07.http.delegate;
+package com.itsdf07.okhttp3;
 
 
 /**
  * @Description ：
  * @Author itsdf07
- * @Time 2018/07/18
+ * @Time 2018/09/13
  */
 public class HttpConfig {
     /**

@@ -1,4 +1,4 @@
-package com.itsdf07.http.utils;
+package com.itsdf07.okhttp3;
 
 import android.os.Build;
 import android.os.Handler;

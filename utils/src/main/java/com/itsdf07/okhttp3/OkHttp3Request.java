@@ -1,9 +1,9 @@
-package com.itsdf07.http.utils;
+package com.itsdf07.okhttp3;
 
 import android.text.TextUtils;
 
 import com.itsdf07.alog.ALog;
-import com.itsdf07.http.delegate.HttpCallbackImpl;
+import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,12 +26,11 @@ import okhttp3.Response;
  * @Author itsdf07
  * @Time 2018/07/18
  */
-public class OkHttpRequest {
+public class OkHttp3Request {
 
-    public static final String TAG_HTTP = "http";
+    public static final String TAG_HTTP = "OkHttp3";
 
     static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");//JSON数据格式
-    public static final MediaType MEDIA_TYPE_URL_ENCODED = MediaType.parse("application/x-www-form-urlencoded");
 
     private static Platform mPlatform;
 
@@ -47,7 +46,7 @@ public class OkHttpRequest {
         if (null == mPlatform) {
             mPlatform = Platform.get();
         }
-        return HttpUtils.getInstance().getOkHttpClient();
+        return OkHttp3Utils.getInstance().getOkHttpClient();
     }
 
 
@@ -59,8 +58,8 @@ public class OkHttpRequest {
      * @param callback
      * @param isDecode
      */
-    public static void sendSuccessResultCallback(final String result, final HttpCallbackImpl callback, final boolean isDecode) {
-        ALog.dTag(TAG_HTTP, "Http result:", result);
+    public static void sendSuccessResultCallback(final String result, final OkHttp3CallbackImpl callback, final boolean isDecode) {
+        ALog.dTag(TAG_HTTP, "http success->data:", result);
         if (callback == null) {
             return;
         }
@@ -77,19 +76,19 @@ public class OkHttpRequest {
      * 数据请求失败
      * 将http请求失败结果转至主线程
      *
-     * @param code
+     * @param netCode
      * @param message
      * @param callback
      */
-    public static void sendFailResultCallback(final String code, final String message, final HttpCallbackImpl callback) {
-        ALog.eTag(TAG_HTTP, "Http onFailure -> code:%s,message:%s", code, message);
+    public static void sendFailResultCallback(final NetCode netCode, final String message, final OkHttp3CallbackImpl callback) {
+        ALog.eTag(TAG_HTTP, "NetCode:%s,msg:%s", netCode.getCode(), message);
         if (callback == null) {
             return;
         }
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                callback.onFailure(code, NetErrCode.translateNetCode(code));
+                callback.onFailure(netCode.getCode(), netCode.getDesc());
                 callback.onFinish();
             }
         });
@@ -104,7 +103,7 @@ public class OkHttpRequest {
      * @param callback
      * @param isFinish        是否下载完成
      */
-    public static void sendProgressResultCallback(final long currentTotalLen, final long totalLen, final HttpCallbackImpl callback, final boolean isFinish) {
+    public static void sendProgressResultCallback(final long currentTotalLen, final long totalLen, final OkHttp3CallbackImpl callback, final boolean isFinish) {
         if (callback == null) {
             return;
         }
@@ -192,7 +191,7 @@ public class OkHttpRequest {
      * @param isDecode 是否需要解密
      * @Description 异步请求
      */
-    public static void doEnqueue(final Request request, final HttpCallbackImpl callback, final boolean isDecode) {
+    public static void doEnqueue(final Request request, final OkHttp3CallbackImpl callback, final boolean isDecode) {
         if (null != callback) {
             callback.onStart();
         }
@@ -200,32 +199,32 @@ public class OkHttpRequest {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                sendFailResultCallback(NetErrCode.ERR_1_FAILURE, e.getMessage(), callback);
+                sendFailResultCallback(NetCode.FAILED, e.getMessage(), callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (null == response) {
-                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_NULL, "The Response obj is null", callback);
+                    sendFailResultCallback(NetCode.CODE_6010, "服务器成功响应，但是response为空", callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_NULL, "The Response body is null", callback);
+                    sendFailResultCallback(NetCode.CODE_6020, "服务器成功响应，但是body为空", callback);
                     return;
                 }
                 String result = response.body().string();
                 if (TextUtils.isEmpty(result)) {
-                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_PARSE, "The Response content null", callback);
+                    sendFailResultCallback(NetCode.CODE_6021, "服务器成功响应，但是body里的内容为空", callback);
                     return;
                 }
                 try {
                     if (response.isSuccessful()) {
                         sendSuccessResultCallback(result, callback, isDecode);
                     } else {
-                        sendFailResultCallback(response.code() + "", response.message(), callback);
+                        sendFailResultCallback(NetCode.CODE_6011, "code:" + response.code() + ",msg:" + response.message(), callback);
                     }
                 } catch (Exception e) {
-                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_PARSE, e.getMessage(), callback);
+                    sendFailResultCallback(NetCode.CODE_6900, e.getMessage(), callback);
                 }
             }
         });
@@ -240,7 +239,7 @@ public class OkHttpRequest {
      * @param callback     请求回调
      * @Description 异步下载请求
      */
-    public static Call doDownloadEnqueue(final Request request, final String destFileDir, final String destFileName, final HttpCallbackImpl callback) {
+    public static Call doDownloadEnqueue(final Request request, final String destFileDir, final String destFileName, final OkHttp3CallbackImpl callback) {
         if (null != callback) {
             callback.onStart();
         }
@@ -249,17 +248,17 @@ public class OkHttpRequest {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                sendFailResultCallback(NetErrCode.ERR_1_FAILURE, e.getMessage(), callback);
+                sendFailResultCallback(NetCode.FAILED, e.getMessage(), callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) {
                 if (null == response) {
-                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_NULL, "The Response obj is null", callback);
+                    sendFailResultCallback(NetCode.CODE_6010, "服务器成功响应，但是response为空", callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_NULL, "The Response body is null", callback);
+                    sendFailResultCallback(NetCode.CODE_6020, "服务器成功响应，但是body为空", callback);
                     return;
                 }
                 InputStream inputStream = response.body().byteStream();
@@ -289,9 +288,9 @@ public class OkHttpRequest {
                     sendProgressResultCallback(currentTotalLen, totalLen, callback, true);
                 } catch (IOException e) {
                     if (e instanceof SocketException) {
-                        sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_CANCLE, e.getMessage(), callback);
+                        sendFailResultCallback(NetCode.CODE_6901, e.getMessage(), callback);
                     } else {
-                        sendFailResultCallback(NetErrCode.ERR_2_RESPONSE_PARSE, e.getMessage(), callback);
+                        sendFailResultCallback(NetCode.CODE_6903, e.getMessage(), callback);
                     }
                 } finally {
                     if (inputStream != null) {
@@ -313,4 +312,9 @@ public class OkHttpRequest {
         });
         return call;
     }
+
+    public static void main(String[] args){
+
+    }
+
 }

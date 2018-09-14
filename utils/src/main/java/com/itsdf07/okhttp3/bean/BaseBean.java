@@ -1,9 +1,9 @@
-package com.itsdf07.http.bean;
+package com.itsdf07.okhttp3.bean;
 
 /**
  * @Description ：网络应答报文基础类
  * @Author itsdf07
- * @Time 2018/07/18
+ * @Time 2018/09/13
  */
 public class BaseBean {
     /**
@@ -19,6 +19,10 @@ public class BaseBean {
      * 应答码描述
      */
     private String desc;
+    /**
+     * 数据是否有加密
+     */
+    private boolean isDecode;
     /**
      * 加密数据
      */
@@ -38,6 +42,14 @@ public class BaseBean {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public boolean isDecode() {
+        return isDecode;
+    }
+
+    public void setDecode(boolean decode) {
+        isDecode = decode;
     }
 
     public String getEncrptyData() {
