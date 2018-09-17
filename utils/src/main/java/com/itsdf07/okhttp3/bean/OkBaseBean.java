@@ -5,7 +5,7 @@ package com.itsdf07.okhttp3.bean;
  * @Author itsdf07
  * @Time 2018/09/13
  */
-public class BaseBean {
+public class OkBaseBean {
     /**
      * code : 200
      * desc : 服务器成功处理请求

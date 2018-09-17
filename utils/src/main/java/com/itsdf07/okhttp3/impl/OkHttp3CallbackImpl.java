@@ -7,7 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import com.itsdf07.alog.ALog;
 import com.itsdf07.okhttp3.NetCode;
 import com.itsdf07.okhttp3.OkHttp3Request;
-import com.itsdf07.okhttp3.bean.BaseBean;
+import com.itsdf07.okhttp3.bean.OkBaseBean;
 import com.itsdf07.okhttp3.callback.OkHttp3Callback;
 
 import java.lang.reflect.ParameterizedType;
@@ -18,14 +18,14 @@ import java.lang.reflect.Type;
  * @Author itsdf07
  * @Time 2018/09/13
  */
-public abstract class OkHttp3CallbackImpl<Result extends BaseBean> implements OkHttp3Callback {
+public abstract class OkHttp3CallbackImpl<Result extends OkBaseBean> implements OkHttp3Callback {
 
     @Override
     public void onSuccess(String result, boolean isDecode) {
         ALog.dTag(OkHttp3Request.TAG_HTTP, "isDecode:%s,data:%s", isDecode, result);
         if (isDecode) {
             //如果数据需要解密，则接收到后不处理直接抛出
-            BaseBean bean = new BaseBean();
+            OkBaseBean bean = new OkBaseBean();
             bean.setDecode(true);
             bean.setEncrptyData(result);
             onSuccess((Result) bean);
@@ -59,7 +59,7 @@ public abstract class OkHttp3CallbackImpl<Result extends BaseBean> implements Ok
 
     @Override
     public void onFailure(String code, String msg) {
-        BaseBean bean = new BaseBean();
+        OkBaseBean bean = new OkBaseBean();
         bean.setCode(code);
         bean.setDesc(msg);
         onFailed(bean);
@@ -94,7 +94,7 @@ public abstract class OkHttp3CallbackImpl<Result extends BaseBean> implements Ok
      *
      * @param bean code + desc
      */
-    public abstract void onFailed(BaseBean bean);
+    public abstract void onFailed(OkBaseBean bean);
 
     /**
      * @param currentTotalLen 进度

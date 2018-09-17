@@ -1,36 +1,31 @@
-## BaseUtils
-用于积累技术点沉淀，并发布于 https://bintray.com/ 平台中，使得任意Demo均可通过 compile 'xxx:xxx:xxx' 进行依赖使用<br/>
-## 使用:Gradlew
-* 项目的build.gradle引入如下代码
-```
-repositories {
-    jcenter()
-    maven {
-        url 'https://bintray.com/itsdf07/maven/'
+## BaseUtils是用来干嘛的？
+我认为每位Android开发者都希望能有一套属于自己的代码，这份代码肯定蕴含着程序员的心血、汗水与泪水。
+
+所以这个即将成为我个人在代码生涯中的财富。
+## 对于BaseUtils有什么规划？
+工具工具，既然是工具，那肯定是多方面的工具，那么就肯定是一个个独立的工具模块，而工具多了，就需要有一个工具箱，实现手提这样一个工具箱，就可以仗工具箱走IT路的理想！
+
+## 对于BaseUtils，里面会有什么工具？
+* alog
+* okhttp3
+
+## 对于module utils的使用
+* 项目的build.gradle增加工具库的目标地址
+```javascript
+    repositories {
+        jcenter()
+        maven {
+            url 'https://bintray.com/itsdf07/maven/'
+        }
     }
-}
 ```
-* 依赖的module中的build.gradle中引入依赖
-```
-compile('com.itsdf07:utils:1.180803.1')
+* 需要依赖该工具库的Module中的'build.gradle'中添加'compile'依赖
+```javascript
+    compile('com.itsdf07:utils:1.2.0')
             {
                 //去掉重复依赖的包
-                exclude group: 'com.android.support'
-                exclude group: 'junit'
                 exclude group: 'com.squareup.okhttp3'
                 exclude group: 'com.squareup.okio'
                 exclude group: 'com.google.code.gson'
             }
 ```
-
-## 提交记录
-* 2018.06.05
-    * 增加控制删除文件时是否在线程中执行
-* 2018.06.06
-    * 完善ALog可自定义存储路径、自定义tag
-* 2018.07.06
-    * 增加AppInfoUtils工具类
-* 2018.07.11
-    * 增加应用重启工具类：广播接收器RestartAppReceiver
-* 2018.07.18
-    * 增加okhttp网络请求工具类:HttpUtils

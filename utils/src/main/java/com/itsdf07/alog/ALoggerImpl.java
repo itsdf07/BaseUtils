@@ -2,7 +2,7 @@ package com.itsdf07.alog;
 
 import android.text.TextUtils;
 
-import com.itsdf07.utils.FileUtils;
+import com.itsdf07.utils.FFileUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -449,8 +449,8 @@ public class ALoggerImpl implements IALogger {
         if (TextUtils.isEmpty(logFilePath)) {
             logFilePath = getALogSettings().getDefaultALogFilePath();
         }
-        final File logFile = FileUtils.getFileByPath(logFilePath);
-        if (!FileUtils.createOrExistsFile(logFile)) {
+        final File logFile = FFileUtils.getFileByPath(logFilePath);
+        if (!FFileUtils.createOrExistsFile(logFile)) {
             return;
         }
         Date now = new Date();
@@ -460,7 +460,7 @@ public class ALoggerImpl implements IALogger {
         Runnable syncRunnable = new Runnable() {
             @Override
             public void run() {
-                FileUtils.write2File(logFile, logContent, append);
+                FFileUtils.write2File(logFile, logContent, append);
             }
         };
         mExecutorService.execute(syncRunnable);

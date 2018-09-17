@@ -13,7 +13,7 @@ import com.itsdf07.alog.ALog;
  * @Time 2018/7/9 14:48
  */
 
-public class SimUtils {
+public class FSimUtils {
 
     /**
      * 获取设备SIM卡状态信息<br>

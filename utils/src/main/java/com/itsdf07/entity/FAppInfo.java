@@ -6,7 +6,7 @@ package com.itsdf07.entity;
  * @Time 2018/7/6 11:31
  */
 
-public class AppInfo {
+public class FAppInfo {
     /**
      * App名称
      */

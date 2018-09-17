@@ -38,7 +38,7 @@ public class OkHttp3Utils {
         builder.connectTimeout(HttpConfig.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(HttpConfig.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
 
-//        File httpCacheDirectory = new File(FileUtils.INNERSDPATH, "http_cache");
+//        File httpCacheDirectory = new File(FFileUtils.INNERSDPATH, "http_cache");
 //        Cache cache = new Cache(httpCacheDirectory, 10240 * 1024 * 100); //100M
 //        builder.cache(cache);
 

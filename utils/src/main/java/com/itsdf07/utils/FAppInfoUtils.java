@@ -9,7 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import com.itsdf07.alog.ALog;
-import com.itsdf07.entity.AppInfo;
+import com.itsdf07.entity.FAppInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  * @Time 2018/7/6 11:09
  */
 
-public class AppInfoUtils {
+public class FAppInfoUtils {
 
     /**
      * 获取app的 versionCode
@@ -171,8 +171,8 @@ public class AppInfoUtils {
      * @param context
      * @return 已安装应用列表，异常时返回 null
      */
-    public static ArrayList<AppInfo> getInstallApps(Context context) {
-        ArrayList<AppInfo> infos = new ArrayList<>();
+    public static ArrayList<FAppInfo> getInstallApps(Context context) {
+        ArrayList<FAppInfo> infos = new ArrayList<>();
         if (null == context) {
             ALog.e("带入的content参数为null");
             return null;
@@ -181,7 +181,7 @@ public class AppInfoUtils {
         for (PackageInfo packageInfo : apps) {
             if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 // 非系统应用
-                AppInfo appInfo = new AppInfo();
+                FAppInfo appInfo = new FAppInfo();
                 appInfo.setAppName(packageInfo.applicationInfo.loadLabel(context.getPackageManager()).toString());
                 appInfo.setVersionName(packageInfo.versionName);
                 appInfo.setVersionCode(packageInfo.versionCode);
@@ -199,8 +199,8 @@ public class AppInfoUtils {
      * @param packageName 对应的app包名
      * @return 查找到的安装应用信息，异常、无结果时返回 null
      */
-    public static AppInfo getInstallApp(Context context, String packageName) {
-        AppInfo appInfo = null;
+    public static FAppInfo getInstallApp(Context context, String packageName) {
+        FAppInfo appInfo = null;
         if (null == context) {
             ALog.e("带入的content参数为null");
             return appInfo;
@@ -209,7 +209,7 @@ public class AppInfoUtils {
         for (PackageInfo packageInfo : apps) {
             if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 if (packageInfo.packageName.equals(packageName)) {
-                    appInfo = new AppInfo();
+                    appInfo = new FAppInfo();
                     appInfo.setAppName(packageInfo.applicationInfo.loadLabel(context.getPackageManager()).toString());
                     appInfo.setVersionName(packageInfo.versionName);
                     appInfo.setVersionCode(packageInfo.versionCode);

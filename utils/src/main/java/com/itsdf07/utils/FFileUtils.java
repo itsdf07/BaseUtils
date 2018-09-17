@@ -24,8 +24,8 @@ import java.util.ArrayList;
  * @Time 2018/6/3
  */
 
-public class FileUtils {
-    private static final String TAG = "FileUtils";
+public class FFileUtils {
+    private static final String TAG = "FFileUtils";
 
     /**
      * 删除垃圾文件完成后（不论成功与否，只要跳出删除）后的回调
@@ -377,6 +377,19 @@ public class FileUtils {
         }
     }
 
+
+    /**
+     * 获取路径下的所有文件集，使用时注意判 null
+     *
+     * @param path
+     * @return
+     */
+    public static File[] getFileList(String path) {
+        File file = new File(path);
+        File[] fileLists = file.listFiles();
+        return fileLists;
+    }
+    
     /**
      * ----------------------------------------------------
      */
