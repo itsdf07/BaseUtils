@@ -50,7 +50,7 @@ public class FLoadingDialog extends ProgressDialog {
         mLoadingTv = (TextView) findViewById(R.id.loadingTv);
     }
 }
-//    LoadingDialog dialog =new LoadingDialog(MainActivity.this, "正在加载中...");
+//    FLoadingDialog dialog =new FLoadingDialog(MainActivity.this, "正在加载中...");
 ////打开
 //dialog.show();
 ////隐藏
