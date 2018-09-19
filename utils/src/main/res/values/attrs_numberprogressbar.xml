@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="NumberProgressBar">
+        <!--进度条当前长度设置属性-->
+        <attr name="progress_current" format="integer" />
+        <!--进度条最大长度设置属性-->
+        <attr name="progress_max" format="integer" />
+
+        <!--剩余未下载的进度条颜色设置属性-->
+        <attr name="progress_unreached_color" format="color" />
+        <!--已下载的进度条的颜色-设置属性-->
+        <attr name="progress_reached_color" format="color" />
+
+        <!--已下载的进度条高度设置属性-->
+        <attr name="progress_reached_bar_height" format="dimension" />
+        <!--剩余未下载的进度条高度设置属性-->
+        <attr name="progress_unreached_bar_height" format="dimension" />
+
+        <!--已下载的进度数字的字体大小设置属性-->
+        <attr name="progress_text_size" format="dimension" />
+        <!--已下载的进度数字的字体颜色设置属性-->
+        <attr name="progress_text_color" format="color" />
+
+        <!--已下载进度只与左右进度条的间隔设置属性-->
+        <attr name="progress_text_offset" format="dimension" />
+
+        <!--进度数值的可见/不可见控制属性-->
+        <attr name="progress_text_visibility" format="enum">
+            <enum name="visible" value="0" />
+            <enum name="invisible" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="Themes">
+        <attr name="numberProgressBarStyle" format="reference" />
+    </declare-styleable>
+</resources>
