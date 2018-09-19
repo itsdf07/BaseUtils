@@ -574,3 +574,12 @@ public class NumberProgressBar extends View {
         mListener = listener;
     }
 }
+//使用方式：
+//<com.itsdf07.progress.NumberProgressBar
+//        android:id="@+id/numberbar"
+//        style="@style/NumberProgressBar_Default"
+//        android:layout_width="wrap_content"
+//        android:layout_height="wrap_content"
+//        android:padding="20dp"
+//        NumberProgressBar:progress_current="20"/>
+//可xml中设置相应属性，也可在Activity中findViewById设置NumberProgressBar内的属性
