@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--设置dialog对话框的背景为透明-->
-    <style name="LoadingDialog_Theme" parent="Theme.AppCompat.Dialog">
-        <item name="android:backgroundDimEnabled">true</item> <!--蒙层：true，无蒙层：false-->
-        <item name="android:windowBackground">@color/ftransparent</item><!--背景透明-->
-    </style>
-</resources>

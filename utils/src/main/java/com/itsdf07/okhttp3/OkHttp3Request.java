@@ -59,7 +59,7 @@ public class OkHttp3Request {
      * @param isDecode
      */
     public static void sendSuccessResultCallback(final String result, final OkHttp3CallbackImpl callback, final boolean isDecode) {
-        ALog.dTag(TAG_HTTP, "data:%s", result);
+        ALog.dTag(TAG_HTTP, "isDecode:%s,result:%s", isDecode, result);
         if (callback == null) {
             return;
         }
@@ -313,7 +313,7 @@ public class OkHttp3Request {
         return call;
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
     }
 

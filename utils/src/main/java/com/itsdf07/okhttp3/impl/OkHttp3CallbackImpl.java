@@ -22,7 +22,6 @@ public abstract class OkHttp3CallbackImpl<Result extends OkBaseBean> implements 
 
     @Override
     public void onSuccess(String result, boolean isDecode) {
-        ALog.dTag(OkHttp3Request.TAG_HTTP, "isDecode:%s,data:%s", isDecode, result);
         if (isDecode) {
             //如果数据需要解密，则接收到后不处理直接抛出
             OkBaseBean bean = new OkBaseBean();

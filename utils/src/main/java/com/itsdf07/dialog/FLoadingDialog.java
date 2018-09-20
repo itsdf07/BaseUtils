@@ -46,7 +46,7 @@ public class FLoadingDialog extends ProgressDialog {
     }
 
     private void initView() {
-        setContentView(R.layout.view_floadingdialog);
+        setContentView(R.layout.fview_loadingdialog);
         mLoadingTv = (TextView) findViewById(R.id.loadingTv);
     }
 }
