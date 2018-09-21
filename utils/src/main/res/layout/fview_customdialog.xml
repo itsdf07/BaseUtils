@@ -32,8 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="left|center"
-                android:lineSpacingMultiplier="1.5"
                 android:minHeight="50dp"
+                android:layout_marginBottom="10dp"
                 tools:text="提示信息在这里" />
         </LinearLayout>
 
