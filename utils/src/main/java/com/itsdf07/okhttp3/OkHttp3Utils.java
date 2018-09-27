@@ -36,7 +36,8 @@ public class OkHttp3Utils {
 
         //默认15秒连接超时
         builder.connectTimeout(HttpConfig.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
-                .readTimeout(HttpConfig.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+                .readTimeout(HttpConfig.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(HttpConfig.DEFAULT_TIMEOUT, TimeUnit.SECONDS);
 
 //        File httpCacheDirectory = new File(FFileUtils.INNERSDPATH, "http_cache");
 //        Cache cache = new Cache(httpCacheDirectory, 10240 * 1024 * 100); //100M
@@ -69,7 +70,7 @@ public class OkHttp3Utils {
      */
     public static void postAsyn(String url, String json, OkHttp3CallbackImpl callback, boolean isDecode) {
         if (TextUtils.isEmpty(json)) {
-            ALog.eTag(OkHttp3Request.TAG_HTTP, "Invalid request data.");
+            ALog.eTag(OkHttp3Request.TAG_HTTP, "无效的请求数据");
             return;
         }
         Request request = OkHttp3Request.builderRequest(OkHttp3Request.HttpMethodType.POST, url, null, json);

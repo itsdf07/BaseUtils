@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -28,7 +30,7 @@ import okhttp3.Response;
  */
 public class OkHttp3Request {
 
-    public static final String TAG_HTTP = "OkHttp3";
+    public static final String TAG_HTTP = "tag_okhttp3";
 
     static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");//JSON数据格式
 
@@ -199,7 +201,21 @@ public class OkHttp3Request {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                sendFailResultCallback(NetCode.FAILED, e.getMessage(), callback);
+                NetCode netCode = NetCode.UNKNOW;
+                if (e instanceof UnknownHostException) {
+                    netCode = NetCode.CODE_6904;
+                } else if (e instanceof SocketTimeoutException) {
+//                    if (null != e.getMessage()) {
+//                        if (e.getMessage().contains("failed to connect to")) {
+//                            //TODO 连接超时
+//                        }
+//                        if (e.getMessage().equals("timeout")) {
+//                            //TODO 读写超时
+//                        }
+//                    }
+                    netCode = NetCode.CODE_6905;
+                }
+                sendFailResultCallback(netCode, e.getMessage(), callback);
             }
 
             @Override
