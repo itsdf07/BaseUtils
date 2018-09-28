@@ -6,8 +6,10 @@ import com.itsdf07.alog.ALog;
 import com.itsdf07.okhttp3.callback.HttpBaseCallback;
 import com.itsdf07.okhttp3.callback.HttpProgressCallback;
 import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
+import com.itsdf07.utils.FFileUtils;
 
 import java.io.File;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -96,7 +98,7 @@ public class OkHttp3Utils {
      * @param json
      * @param callback
      */
-    public static void doPostAsyn(String url, String json, HttpBaseCallback callback) {
+    public static void doPostAsynData(String url, String json, HttpBaseCallback callback) {
         if (!checkUrl(url)) {
             if (null != callback) {
                 callback.onFailure(NetCode.CODE_6002, "请求的URL异常:" + url);
@@ -122,12 +124,20 @@ public class OkHttp3Utils {
      * @param callback 请求回调
      * @Description 单文件上传
      */
-    public static void doPostAsynFile(String url, File file, HttpProgressCallback callback) {
-        if (!file.exists()) {
+    public static void doPostAsynFile(String url, File file, Map<String, String> params, HttpProgressCallback callback) {
+        if (!checkUrl(url)) {
+            if (null != callback) {
+                callback.onFailure(NetCode.CODE_6002, "请求的URL异常:" + url);
+            }
             return;
         }
-        Request request = OkHttp3Request.builderFileRequest(url, file, callback);
-        ALog.dTag(OkHttp3Request.TAG_HTTP, "header:%s", request.headers().toString());
+        if (!FFileUtils.isFileExists(file)) {
+            if (null != callback) {
+                callback.onFailure(NetCode.CODE_6004, "上传的文件不存在，请检查...");
+            }
+            return;
+        }
+        Request request = OkHttp3Request.builderFileMapRequest(url, file, params, callback);
         OkHttp3Request.doPostEnqueue(request, callback);
     }
 

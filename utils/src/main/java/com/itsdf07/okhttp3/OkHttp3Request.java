@@ -175,39 +175,47 @@ public class OkHttp3Request {
     /**
      * @param url      请求地址
      * @param file     上传文件
+     * @param params   header参数
      * @param callback 请求回调
      * @Description Request对象
      */
-    public static Request builderFileRequest(String url, File file, HttpProgressCallback callback) {
+    public static Request builderFileMapRequest(String url, File file, Map<String, String> params, HttpProgressCallback callback) {
+        Request request;
         Request.Builder builder = new Request.Builder().url(url);
-        builder.addHeader("imageName", "100210044.jpg");
-        builder.addHeader("userName", "100210044");
-        builder.addHeader("md5", FMD5Utils.getFileMD5(file));
-        if (file != null) {
+        if (null != params && !params.isEmpty()) {
+            for (String key : params.keySet()) {
+                builder.addHeader(key, params.get(key));
+            }
+        }
+        if (null != file) {
             RequestBody body = builderFileFormData(file, callback);
             builder.post(body);
         }
-
-        return builder.build();
+        request = builder.build();
+        ALog.dTag(TAG_HTTP, "\nURL:%s\nMethod:%s\nheader：[\n%s]\nbody:%s",
+                request.url().toString(), request.method().toString(), request.headers().toString(), file.getPath());
+        return request;
     }
 
 
     /**
-     * @param file     上传文件
-     * @param callback 请求回调
-     * @Description RequestBody对象
+     * 获取存放上传文件的请求载体RequestBody，并实现进度数据透传
+     *
+     * @param file
+     * @param callback
+     * @return RequestBody对象
      */
     private static RequestBody builderFileFormData(File file, final HttpProgressCallback callback) {
         ProgressRequestBody progressRequestBody = null;
-        if (file != null) {
+        if (null != file) {
             RequestBody requestBody = RequestBody.create(MEDIA_TYPE_STREAM, file);
             progressRequestBody = new ProgressRequestBody(requestBody, new ProgressRequestBody.Listener() {
                 @Override
-                public void onRequestProgress(final long byteWritted, final long contentLength) {
+                public void onRequestProgress(final long byteWrited, final long contentLength) {
                     mPlatform.execute(new Runnable() {
                         @Override
                         public void run() {
-                            callback.onProgress(byteWritted, contentLength);
+                            callback.onProgress(byteWrited, contentLength);
                         }
                     });
                 }
@@ -225,8 +233,8 @@ public class OkHttp3Request {
      * @Description Request对象
      */
     public static Request builderRequest(HttpMethodType methodType, String url, Map<String, String> params, String json) {
+        Request request;
         Request.Builder builder = new Request.Builder().url(url);
-        ALog.dTag(TAG_HTTP, "HttpMethodType:%s->url:%s", methodType.name(), url);
         if (methodType == HttpMethodType.POST) {
             if (json != null) {
                 ALog.dTag(TAG_HTTP, "body(json):%s", json);
@@ -239,7 +247,10 @@ public class OkHttp3Request {
         } else if (methodType == HttpMethodType.GET) {
             builder.get();
         }
-        return builder.build();
+        request = builder.build();
+//        ALog.dTag(TAG_HTTP, "\nURL:%s\nMethod:%s\nheader：[\n%s]\nbody:%s",
+//                request.url().toString(), request.method().toString(), request.headers().toString(), file.getPath());
+        return request;
     }
 
     public static Request builderRequest(HttpMethodType methodType, String url, Map<String, String> params, String json, MediaType mediaType) {
