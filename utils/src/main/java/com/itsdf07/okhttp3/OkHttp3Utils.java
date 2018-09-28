@@ -3,9 +3,11 @@ package com.itsdf07.okhttp3;
 import android.text.TextUtils;
 
 import com.itsdf07.alog.ALog;
-import com.itsdf07.okhttp3.callback.HttpCallback;
+import com.itsdf07.okhttp3.callback.HttpBaseCallback;
+import com.itsdf07.okhttp3.callback.HttpProgressCallback;
 import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -94,7 +96,7 @@ public class OkHttp3Utils {
      * @param json
      * @param callback
      */
-    public static void doPostAsyn(String url, String json, HttpCallback callback) {
+    public static void doPostAsyn(String url, String json, HttpBaseCallback callback) {
         if (!checkUrl(url)) {
             if (null != callback) {
                 callback.onFailure(NetCode.CODE_6002, "请求的URL异常:" + url);
@@ -109,6 +111,23 @@ public class OkHttp3Utils {
             return;
         }
         Request request = OkHttp3Request.builderRequest(OkHttp3Request.HttpMethodType.POST, url, null, json);
+        OkHttp3Request.doPostEnqueue(request, callback);
+    }
+
+    /**--------------------    文件上传    --------------------**/
+
+    /**
+     * @param url      请求地址
+     * @param file     上传文件
+     * @param callback 请求回调
+     * @Description 单文件上传
+     */
+    public static void doPostAsynFile(String url, File file, HttpProgressCallback callback) {
+        if (!file.exists()) {
+            return;
+        }
+        Request request = OkHttp3Request.builderFileRequest(url, file, callback);
+        ALog.dTag(OkHttp3Request.TAG_HTTP, "header:%s", request.headers().toString());
         OkHttp3Request.doPostEnqueue(request, callback);
     }
 

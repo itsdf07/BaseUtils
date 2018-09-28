@@ -3,8 +3,11 @@ package com.itsdf07.okhttp3;
 import android.text.TextUtils;
 
 import com.itsdf07.alog.ALog;
-import com.itsdf07.okhttp3.callback.HttpCallback;
+import com.itsdf07.okhttp3.callback.HttpBaseCallback;
+import com.itsdf07.okhttp3.callback.HttpProgressCallback;
 import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
+import com.itsdf07.okhttp3.progress.ProgressRequestBody;
+import com.itsdf07.utils.FMD5Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,7 +21,9 @@ import java.util.Map;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -34,6 +39,7 @@ public class OkHttp3Request {
     public static final String TAG_HTTP = "tag_okhttp3";
 
     static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");//JSON数据格式
+    private static final MediaType MEDIA_TYPE_STREAM = MediaType.parse("application/octet-stream");//二进制流数据
 
     private static Platform mPlatform;
 
@@ -105,7 +111,7 @@ public class OkHttp3Request {
      * @param result
      * @param callback
      */
-    public static void sendSuccessResultCallback(final String result, final HttpCallback callback) {
+    public static void sendSuccessResultCallback(final String result, final HttpBaseCallback callback) {
         ALog.dTag(TAG_HTTP, "result:%s", result);
 
         mPlatform.execute(new Runnable() {
@@ -126,7 +132,7 @@ public class OkHttp3Request {
      * @param message
      * @param callback
      */
-    public static void sendFailResultCallback(final NetCode netCode, final String message, final HttpCallback callback) {
+    public static void sendFailResultCallback(final NetCode netCode, final String message, final HttpBaseCallback callback) {
         ALog.eTag(TAG_HTTP, "NetCode:%s,\nmsg:%s", netCode.getCode(), message);
         mPlatform.execute(new Runnable() {
             @Override
@@ -164,6 +170,52 @@ public class OkHttp3Request {
     }
 
     /**--------------------    异步数据请求    --------------------**/
+
+
+    /**
+     * @param url      请求地址
+     * @param file     上传文件
+     * @param callback 请求回调
+     * @Description Request对象
+     */
+    public static Request builderFileRequest(String url, File file, HttpProgressCallback callback) {
+        Request.Builder builder = new Request.Builder().url(url);
+        builder.addHeader("imageName", "100210044.jpg");
+        builder.addHeader("userName", "100210044");
+        builder.addHeader("md5", FMD5Utils.getFileMD5(file));
+        if (file != null) {
+            RequestBody body = builderFileFormData(file, callback);
+            builder.post(body);
+        }
+
+        return builder.build();
+    }
+
+
+    /**
+     * @param file     上传文件
+     * @param callback 请求回调
+     * @Description RequestBody对象
+     */
+    private static RequestBody builderFileFormData(File file, final HttpProgressCallback callback) {
+        ProgressRequestBody progressRequestBody = null;
+        if (file != null) {
+            RequestBody requestBody = RequestBody.create(MEDIA_TYPE_STREAM, file);
+            progressRequestBody = new ProgressRequestBody(requestBody, new ProgressRequestBody.Listener() {
+                @Override
+                public void onRequestProgress(final long byteWritted, final long contentLength) {
+                    mPlatform.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onProgress(byteWritted, contentLength);
+                        }
+                    });
+                }
+            });
+        }
+
+        return progressRequestBody;
+    }
 
     /**
      * @param methodType 请求方式
@@ -296,9 +348,8 @@ public class OkHttp3Request {
      * @param callback 请求回调
      * @Description 异步请求
      */
-    public static void doPostEnqueue(final Request request, final HttpCallback callback) {
+    public static void doPostEnqueue(final Request request, final HttpBaseCallback callback) {
         getOkHttpClient().newCall(request).enqueue(new Callback() {
-
             @Override
             public void onFailure(Call call, IOException e) {
                 NetCode netCode = NetCode.UNKNOW;

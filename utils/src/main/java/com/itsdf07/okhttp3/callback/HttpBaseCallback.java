@@ -8,7 +8,7 @@ import com.itsdf07.okhttp3.NetCode;
  * @Time 2018/9/28/028
  */
 
-public interface HttpCallback {
+public interface HttpBaseCallback {
     /**
      * @param result 请求结果
      * @Description http成功响应
