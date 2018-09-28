@@ -3,6 +3,7 @@ package com.itsdf07.okhttp3;
 import android.text.TextUtils;
 
 import com.itsdf07.alog.ALog;
+import com.itsdf07.okhttp3.callback.HttpCallback;
 import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
 
 import java.io.File;
@@ -92,6 +93,47 @@ public class OkHttp3Request {
             public void run() {
                 callback.onFailure(netCode.getCode(), netCode.getDesc());
                 callback.onFinish();
+            }
+        });
+    }
+
+
+    /**
+     * 数据请求成功
+     * 将http请求成功结果转至主线程
+     *
+     * @param result
+     * @param callback
+     */
+    public static void sendSuccessResultCallback(final String result, final HttpCallback callback) {
+        ALog.dTag(TAG_HTTP, "result:%s", result);
+
+        mPlatform.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (null != callback) {
+                    callback.onSuccess(result);
+                }
+            }
+        });
+    }
+
+    /**
+     * 数据请求失败
+     * 将http请求失败结果转至主线程
+     *
+     * @param netCode
+     * @param message
+     * @param callback
+     */
+    public static void sendFailResultCallback(final NetCode netCode, final String message, final HttpCallback callback) {
+        ALog.eTag(TAG_HTTP, "NetCode:%s,\nmsg:%s", netCode.getCode(), message);
+        mPlatform.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (null != callback) {
+                    callback.onFailure(netCode, netCode.getDesc());
+                }
             }
         });
     }
@@ -236,6 +278,64 @@ public class OkHttp3Request {
                 try {
                     if (response.isSuccessful()) {
                         sendSuccessResultCallback(result, callback, isDecode);
+                    } else {
+                        sendFailResultCallback(NetCode.CODE_6011, "code:" + response.code() + ",msg:" + response.message(), callback);
+                    }
+                } catch (Exception e) {
+                    sendFailResultCallback(NetCode.CODE_6900, e.getMessage(), callback);
+                }
+            }
+        });
+    }
+
+
+    /**
+     * Post数据请求
+     *
+     * @param request  Request对象
+     * @param callback 请求回调
+     * @Description 异步请求
+     */
+    public static void doPostEnqueue(final Request request, final HttpCallback callback) {
+        getOkHttpClient().newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                NetCode netCode = NetCode.UNKNOW;
+                if (e instanceof UnknownHostException) {
+                    netCode = NetCode.CODE_6904;
+                } else if (e instanceof SocketTimeoutException) {
+//                    if (null != e.getMessage()) {
+//                        if (e.getMessage().contains("failed to connect to")) {
+//                            //TODO 连接超时
+//                        }
+//                        if (e.getMessage().equals("timeout")) {
+//                            //TODO 读写超时
+//                        }
+//                    }
+                    netCode = NetCode.CODE_6905;
+                }
+                sendFailResultCallback(netCode, e.getMessage(), callback);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (null == response) {
+                    sendFailResultCallback(NetCode.CODE_6010, "服务器成功响应，但是response为空", callback);
+                    return;
+                }
+                if (null == response.body()) {
+                    sendFailResultCallback(NetCode.CODE_6020, "服务器成功响应，但是body为空", callback);
+                    return;
+                }
+                String result = response.body().string();
+                if (TextUtils.isEmpty(result)) {
+                    sendFailResultCallback(NetCode.CODE_6021, "服务器成功响应，但是body里的内容为空", callback);
+                    return;
+                }
+                try {
+                    if (response.isSuccessful()) {
+                        sendSuccessResultCallback(result, callback);
                     } else {
                         sendFailResultCallback(NetCode.CODE_6011, "code:" + response.code() + ",msg:" + response.message(), callback);
                     }

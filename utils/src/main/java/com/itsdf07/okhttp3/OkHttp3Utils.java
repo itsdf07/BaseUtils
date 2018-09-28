@@ -3,11 +3,13 @@ package com.itsdf07.okhttp3;
 import android.text.TextUtils;
 
 import com.itsdf07.alog.ALog;
+import com.itsdf07.okhttp3.callback.HttpCallback;
 import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
 
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -50,6 +52,14 @@ public class OkHttp3Utils {
         return okHttpClient;
     }
 
+    /**
+     * 检查请求URL
+     */
+    private static boolean checkUrl(String url) {
+        HttpUrl parsed = HttpUrl.parse(url);
+        return parsed != null && !TextUtils.isEmpty(url);
+    }
+
     /**--------------------    异步数据请求    --------------------**/
     /**
      * @param url      请求地址
@@ -75,6 +85,31 @@ public class OkHttp3Utils {
         }
         Request request = OkHttp3Request.builderRequest(OkHttp3Request.HttpMethodType.POST, url, null, json);
         OkHttp3Request.doEnqueue(request, callback, isDecode);
+    }
+
+    /**
+     * Post异步请求
+     *
+     * @param url
+     * @param json
+     * @param callback
+     */
+    public static void doPostAsyn(String url, String json, HttpCallback callback) {
+        if (!checkUrl(url)) {
+            if (null != callback) {
+                callback.onFailure(NetCode.CODE_6002, "请求的URL异常:" + url);
+            }
+            return;
+        }
+        if (TextUtils.isEmpty(json)) {
+            if (null != callback) {
+                callback.onFailure(NetCode.CODE_6003, "请求的URL异常:" + url);
+
+            }
+            return;
+        }
+        Request request = OkHttp3Request.builderRequest(OkHttp3Request.HttpMethodType.POST, url, null, json);
+        OkHttp3Request.doPostEnqueue(request, callback);
     }
 
     /**--------------------    文件下载    --------------------**/
