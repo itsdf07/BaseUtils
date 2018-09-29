@@ -65,15 +65,15 @@ class OkHttp3Request {
      * @param isDecode
      */
     public static void sendSuccessResultCallback(final String result, final OkHttp3CallbackImpl callback, final boolean isDecode) {
-        ALog.dTag(TAG_HTTP, "isDecode:%s,result:%s", isDecode, result);
-        if (callback == null) {
-            return;
-        }
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                callback.onSuccess(result, isDecode);
-                callback.onFinish();
+                if (callback == null) {
+                    ALog.dTag(TAG_HTTP, "isDecode:%s,result:%s", isDecode, result);
+                    callback.onSuccess(result, isDecode);
+                    callback.onFinish();
+                }
+
             }
         });
     }
@@ -83,110 +83,21 @@ class OkHttp3Request {
      * 将http请求失败结果转至主线程
      *
      * @param netCode
-     * @param message
      * @param callback
      */
-    public static void sendFailResultCallback(final NetCode netCode, final String message, final OkHttp3CallbackImpl callback) {
-        ALog.eTag(TAG_HTTP, "NetCode:%s,msg:%s", netCode.getCode(), message);
-        if (callback == null) {
-            return;
-        }
+    public static void sendFailResultCallback(final NetCode netCode, final OkHttp3CallbackImpl callback) {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                callback.onFailure(netCode.getCode(), netCode.getDesc());
-                callback.onFinish();
-            }
-        });
-    }
-
-    /**
-     * 文件下载进度
-     * 线程转为主线程
-     *
-     * @param currentTotalLen
-     * @param totalLen
-     * @param callback
-     * @param isFinish        是否下载完成
-     */
-    public static void sendProgressResultCallback(final long currentTotalLen, final long totalLen, final OkHttp3CallbackImpl callback, final boolean isFinish) {
-        if (callback == null) {
-            return;
-        }
-        mPlatform.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (isFinish) {
+                ALog.eTag(TAG_HTTP, "NetCode:%s,\nmsg:%s,\ninfo:%s", netCode.getCode(), netCode.getDesc(), netCode.getInfo());
+                if (callback == null) {
+                    callback.onFailure(netCode.getCode(), netCode.getDesc());
                     callback.onFinish();
-                } else {
-                    callback.onProgress(currentTotalLen, totalLen);
                 }
+
             }
         });
     }
-
-    /**
-     * @param methodType 请求方式
-     * @param url        请求地址
-     * @param params     请求参数
-     * @param json       json数据格式
-     * @Description Request对象
-     */
-    public static Request builderRequest(HttpMethodType methodType, String url, Map<String, String> params, String json) {
-        Request request;
-        Request.Builder builder = new Request.Builder().url(url);
-        if (methodType == HttpMethodType.POST) {
-            if (json != null) {
-                ALog.dTag(TAG_HTTP, "body(json):%s", json);
-                RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
-                builder.post(body);
-            } else {
-                RequestBody body = builderFormData(params);
-                builder.post(body);
-            }
-        } else if (methodType == HttpMethodType.GET) {
-            builder.get();
-        }
-        request = builder.build();
-//        ALog.dTag(TAG_HTTP, "\nURL:%s\nMethod:%s\nheader：[\n%s]\nbody:%s",
-//                request.url().toString(), request.method().toString(), request.headers().toString(), file.getPath());
-        return request;
-    }
-
-    public static Request builderRequest(HttpMethodType methodType, String url, Map<String, String> params, String json, MediaType mediaType) {
-        Request.Builder builder = new Request.Builder()
-                .url(url);
-
-        if (methodType == HttpMethodType.POST) {
-            if (json != null) {
-                RequestBody body = RequestBody.create(mediaType, json);
-                builder.post(body);
-            } else {
-                RequestBody body = builderFormData(params);
-                builder.post(body);
-            }
-        } else if (methodType == HttpMethodType.GET) {
-            builder.get();
-        }
-
-        return builder.build();
-    }
-
-    /**
-     * @param params 请求参数
-     * @Description RequestBody对象
-     */
-    private static RequestBody builderFormData(Map<String, String> params) {
-        FormBody.Builder builder = new FormBody.Builder();
-        if (params != null && !params.isEmpty()) {
-            for (String key : params.keySet()) {
-                String value = params.get(key);
-                builder.add(key, value);
-            }
-        }
-        return builder.build();
-    }
-
 
     /**
      * 默认不需要对返回的数据解密
@@ -196,12 +107,9 @@ class OkHttp3Request {
      * @param isDecode 是否需要解密
      * @Description 异步请求
      */
-    public static void doEnqueue(final Request request, final OkHttp3CallbackImpl callback, final boolean isDecode) {
-        if (null != callback) {
-            callback.onStart();
-        }
-        getOkHttpClient().newCall(request).enqueue(new Callback() {
-
+    public static Call doEnqueue(final Request request, final OkHttp3CallbackImpl callback, final boolean isDecode) {
+        Call call = getOkHttpClient().newCall(request);
+        call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 NetCode netCode = NetCode.UNKNOW;
@@ -218,114 +126,35 @@ class OkHttp3Request {
 //                    }
                     netCode = NetCode.CODE_6905;
                 }
-                sendFailResultCallback(netCode, e.getMessage(), callback);
+                netCode.setInfo(e.getMessage());
+                sendFailResultCallback(netCode, callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (null == response) {
-                    sendFailResultCallback(NetCode.CODE_6010, "服务器成功响应，但是response为空", callback);
+                    sendFailResultCallback(NetCode.CODE_6010, callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetCode.CODE_6020, "服务器成功响应，但是body为空", callback);
+                    sendFailResultCallback(NetCode.CODE_6020, callback);
                     return;
                 }
                 String result = response.body().string();
                 if (TextUtils.isEmpty(result)) {
-                    sendFailResultCallback(NetCode.CODE_6021, "服务器成功响应，但是body里的内容为空", callback);
+                    sendFailResultCallback(NetCode.CODE_6021, callback);
                     return;
                 }
                 try {
                     if (response.isSuccessful()) {
                         sendSuccessResultCallback(result, callback, isDecode);
                     } else {
-                        sendFailResultCallback(NetCode.CODE_6011, "code:" + response.code() + ",msg:" + response.message(), callback);
+                        NetCode.CODE_6011.setInfo("code:" + response.code() + ",\nmsg:" + response.message());
+                        sendFailResultCallback(NetCode.CODE_6011, callback);
                     }
                 } catch (Exception e) {
-                    sendFailResultCallback(NetCode.CODE_6900, e.getMessage(), callback);
-                }
-            }
-        });
-    }
-
-    /**--------------------    异步文件下载    --------------------**/
-
-    /**
-     * @param request      Request对象
-     * @param destFileDir  目标文件存储的文件目录
-     * @param destFileName 目标文件存储的文件名
-     * @param callback     请求回调
-     * @Description 异步下载请求
-     */
-    public static Call doDownloadEnqueue(final Request request, final String destFileDir, final String destFileName, final OkHttp3CallbackImpl callback) {
-        if (null != callback) {
-            callback.onStart();
-        }
-        Call call = getOkHttpClient().newCall(request);
-        call.enqueue(new Callback() {
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                sendFailResultCallback(NetCode.FAILED, e.getMessage(), callback);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) {
-                if (null == response) {
-                    sendFailResultCallback(NetCode.CODE_6010, "服务器成功响应，但是response为空", callback);
-                    return;
-                }
-                if (null == response.body()) {
-                    sendFailResultCallback(NetCode.CODE_6020, "服务器成功响应，但是body为空", callback);
-                    return;
-                }
-                InputStream inputStream = response.body().byteStream();
-                FileOutputStream fileOutputStream = null;
-                try {
-                    byte[] buffer = new byte[2048];
-                    int len;
-                    long currentTotalLen = 0L;
-                    long totalLen = response.body().contentLength();
-
-                    File dir = new File(destFileDir);
-                    if (!dir.exists()) {
-                        dir.mkdirs();
-                    }
-                    File file = new File(dir, destFileName);
-                    if (file.exists()) {
-                        //如果文件存在则删除
-                        file.delete();
-                    }
-                    fileOutputStream = new FileOutputStream(file);
-                    while ((len = inputStream.read(buffer)) != -1) {
-                        fileOutputStream.write(buffer, 0, len);
-                        currentTotalLen += len;
-                        sendProgressResultCallback(currentTotalLen, totalLen, callback, false);
-                    }
-                    fileOutputStream.flush();
-                    sendProgressResultCallback(currentTotalLen, totalLen, callback, true);
-                } catch (IOException e) {
-                    if (e instanceof SocketException) {
-                        sendFailResultCallback(NetCode.CODE_6901, e.getMessage(), callback);
-                    } else {
-                        sendFailResultCallback(NetCode.CODE_6903, e.getMessage(), callback);
-                    }
-                } finally {
-                    if (inputStream != null) {
-                        try {
-                            inputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (fileOutputStream != null) {
-                        try {
-                            fileOutputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    NetCode.CODE_6900.setInfo(e.getMessage());
+                    sendFailResultCallback(NetCode.CODE_6900, callback);
                 }
             }
         });
@@ -359,14 +188,13 @@ class OkHttp3Request {
      * 将http请求失败结果转至主线程
      *
      * @param netCode
-     * @param message
      * @param callback
      */
-    public static void sendFailResultCallback(final NetCode netCode, final String message, final HttpBaseCallback callback) {
+    public static void sendFailResultCallback(final NetCode netCode, final HttpBaseCallback callback) {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                ALog.eTag(TAG_HTTP, "NetCode:%s,\nmsg:%s", netCode.getCode(), message);
+                ALog.eTag(TAG_HTTP, "NetCode:%s,\nmsg:%s,\ninfo:%s", netCode.getCode(), netCode.getDesc(), netCode.getInfo());
                 if (null != callback) {
                     callback.onFailure(netCode, netCode.getDesc());
                 }
@@ -379,22 +207,39 @@ class OkHttp3Request {
      * 文件下载进度
      * 线程转为主线程
      *
-     * @param currentTotalLen
+     * @param currentLen
      * @param totalLen
      * @param callback
-     * @param isFinish        是否下载完成
+     * @param isFinish   是否下载完成
      */
-    public static void sendProgressResultCallback(final long currentTotalLen, final long totalLen, final HttpProgressCallback callback, final boolean isFinish) {
+    public static void sendProgressResultCallback(final long currentLen, final long totalLen, final HttpProgressCallback callback, final boolean isFinish) {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
                 if (isFinish) {
+                    ALog.dTag(TAG_HTTP, "下载完成");
                     callback.onSuccess("下载完成");
                 } else {
-                    callback.onProgress(currentTotalLen, totalLen);
+                    ALog.dTag(TAG_HTTP, "下载中,totalLen:%s,currentLen:%s", totalLen, currentLen);
+                    callback.onProgress(currentLen, totalLen);
                 }
             }
         });
+    }
+
+    /**
+     * @param params 请求参数
+     * @Description RequestBody对象
+     */
+    private static RequestBody builderFormMapData(Map<String, String> params) {
+        FormBody.Builder builder = new FormBody.Builder();
+        if (params != null && !params.isEmpty()) {
+            for (String key : params.keySet()) {
+                String value = params.get(key);
+                builder.add(key, value);
+            }
+        }
+        return builder.build();
     }
 
     /**
@@ -404,7 +249,7 @@ class OkHttp3Request {
      * @param callback
      * @return RequestBody对象
      */
-    private static RequestBody builderFileFormData(File file, final HttpProgressCallback callback) {
+    private static RequestBody builderFormFileData(File file, final HttpProgressCallback callback) {
         ProgressRequestBody progressRequestBody = null;
         if (null != file) {
             RequestBody requestBody = RequestBody.create(MEDIA_TYPE_STREAM, file);
@@ -446,7 +291,7 @@ class OkHttp3Request {
                 RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
                 builder.post(body);
             } else {
-                RequestBody body = builderFormData(params);
+                RequestBody body = builderFormMapData(params);
                 builder.post(body);
                 bodyLog = buildBodyLog4Map(params);
             }
@@ -482,7 +327,7 @@ class OkHttp3Request {
             }
         }
         if (null != file) {
-            RequestBody body = builderFileFormData(file, callback);
+            RequestBody body = builderFormFileData(file, callback);
             builder.post(body);
             filePath = file.getPath();
         }
@@ -520,32 +365,35 @@ class OkHttp3Request {
 //                    }
                     netCode = NetCode.CODE_6905;
                 }
-                sendFailResultCallback(netCode, e.getMessage(), callback);
+                netCode.setInfo(e.getMessage());
+                sendFailResultCallback(netCode, callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (null == response) {
-                    sendFailResultCallback(NetCode.CODE_6010, "服务器成功响应，但是response为空", callback);
+                    sendFailResultCallback(NetCode.CODE_6010, callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetCode.CODE_6020, "服务器成功响应，但是body为空", callback);
+                    sendFailResultCallback(NetCode.CODE_6020, callback);
                     return;
                 }
                 String result = response.body().string();
                 if (TextUtils.isEmpty(result)) {
-                    sendFailResultCallback(NetCode.CODE_6021, "服务器成功响应，但是body里的内容为空", callback);
+                    sendFailResultCallback(NetCode.CODE_6021, callback);
                     return;
                 }
                 try {
                     if (response.isSuccessful()) {
                         sendSuccessResultCallback(result, callback);
                     } else {
-                        sendFailResultCallback(NetCode.CODE_6011, "code:" + response.code() + ",msg:" + response.message(), callback);
+                        NetCode.CODE_6011.setInfo("code:" + response.code() + ",\nmsg:" + response.message());
+                        sendFailResultCallback(NetCode.CODE_6011, callback);
                     }
                 } catch (Exception e) {
-                    sendFailResultCallback(NetCode.CODE_6900, e.getMessage(), callback);
+                    NetCode.CODE_6900.setInfo(e.getMessage());
+                    sendFailResultCallback(NetCode.CODE_6900, callback);
                 }
             }
         });
@@ -583,17 +431,18 @@ class OkHttp3Request {
 //                    }
                     netCode = NetCode.CODE_6905;
                 }
-                sendFailResultCallback(netCode, e.getMessage(), callback);
+                netCode.setInfo(e.getMessage());
+                sendFailResultCallback(netCode, callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) {
                 if (null == response) {
-                    sendFailResultCallback(NetCode.CODE_6010, "服务器成功响应，但是response为空", callback);
+                    sendFailResultCallback(NetCode.CODE_6010, callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetCode.CODE_6020, "服务器成功响应，但是body为空", callback);
+                    sendFailResultCallback(NetCode.CODE_6020, callback);
                     return;
                 }
                 InputStream inputStream = response.body().byteStream();
@@ -623,9 +472,11 @@ class OkHttp3Request {
                     sendProgressResultCallback(currentTotalLen, totalLen, callback, true);
                 } catch (IOException e) {
                     if (e instanceof SocketException) {
-                        sendFailResultCallback(NetCode.CODE_6901, e.getMessage(), callback);
+                        NetCode.CODE_6901.setInfo(e.getMessage());
+                        sendFailResultCallback(NetCode.CODE_6901, callback);
                     } else {
-                        sendFailResultCallback(NetCode.CODE_6903, e.getMessage(), callback);
+                        NetCode.CODE_6903.setInfo(e.getMessage());
+                        sendFailResultCallback(NetCode.CODE_6903, callback);
                     }
                 } finally {
                     if (inputStream != null) {

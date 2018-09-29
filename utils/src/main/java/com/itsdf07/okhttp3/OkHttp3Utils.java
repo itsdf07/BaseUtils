@@ -83,13 +83,24 @@ public class OkHttp3Utils {
      * @param isDecode 返回的数据是否需要解密
      * @Description POST提交JSON数据
      */
-    public static void postAsyn(String url, String json, OkHttp3CallbackImpl callback, boolean isDecode) {
-        if (TextUtils.isEmpty(json)) {
-            ALog.eTag(OkHttp3Request.TAG_HTTP, "无效的请求数据");
-            return;
+    public static Call postAsyn(String url, String json, OkHttp3CallbackImpl callback, boolean isDecode) {
+        if (!checkUrl(url)) {
+            if (null != callback) {
+                callback.onFailure(NetCode.CODE_6002.getCode(), "请求的URL异常:" + url);
+            }
+            return null;
         }
-        Request request = OkHttp3Request.builderRequest(OkHttp3Request.HttpMethodType.POST, url, null, json);
-        OkHttp3Request.doEnqueue(request, callback, isDecode);
+        if (TextUtils.isEmpty(json)) {
+            if (null != callback) {
+                callback.onFailure(NetCode.CODE_6003.getCode(), "无效的请求数据:" + json);
+            }
+            return null;
+        }
+        Request request = OkHttp3Request.builderDataRequest(OkHttp3Request.HttpMethodType.POST, url, null, json);
+        if (null != callback) {
+            callback.onStart();
+        }
+        return OkHttp3Request.doEnqueue(request, callback, isDecode);
     }
 
     /***************************************************  V 2  *************************************************************/
@@ -113,8 +124,7 @@ public class OkHttp3Utils {
         }
         if (TextUtils.isEmpty(json)) {
             if (null != callback) {
-                callback.onFailure(NetCode.CODE_6003, "请求的URL异常:" + url);
-
+                callback.onFailure(NetCode.CODE_6003, "无效的请求数据:" + json);
             }
             return null;
         }

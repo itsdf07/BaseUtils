@@ -94,14 +94,6 @@ public abstract class OkHttp3CallbackImpl<Result extends OkBaseBean> implements 
     public abstract void onFailed(OkBaseBean bean);
 
     /**
-     * @param currentTotalLen 进度
-     * @param totalLen        总量
-     * @Description 上传或下载时进度回调
-     */
-    public void onProgress(long currentTotalLen, long totalLen) {
-    }
-
-    /**
      * 请求结束
      */
     public abstract void onFinish();
