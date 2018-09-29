@@ -68,7 +68,7 @@ class OkHttp3Request {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                if (callback == null) {
+                if (callback != null) {
                     ALog.dTag(TAG_HTTP, "isDecode:%s,result:%s", isDecode, result);
                     callback.onSuccess(result, isDecode);
                     callback.onFinish();
@@ -90,7 +90,7 @@ class OkHttp3Request {
             @Override
             public void run() {
                 ALog.eTag(TAG_HTTP, "NetCode:%s,\nmsg:%s,\ninfo:%s", netCode.getCode(), netCode.getDesc(), netCode.getInfo());
-                if (callback == null) {
+                if (callback != null) {
                     callback.onFailure(netCode.getCode(), netCode.getDesc());
                     callback.onFinish();
                 }
