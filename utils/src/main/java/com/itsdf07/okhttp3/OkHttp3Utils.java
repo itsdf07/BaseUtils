@@ -23,6 +23,7 @@ import okhttp3.Request;
  * @Time 2018/07/18
  */
 public class OkHttp3Utils {
+    public static final String TAG_HTTP = OkHttp3Request.TAG_HTTP;
     private static OkHttp3Utils instance;
     private OkHttpClient okHttpClient;
 
@@ -91,67 +92,77 @@ public class OkHttp3Utils {
         OkHttp3Request.doEnqueue(request, callback, isDecode);
     }
 
+    /***************************************************  V 2  *************************************************************/
+
+    /**--------------------    Post方式Json格式数据请求    --------------------**/
     /**
-     * Post异步请求
+     * Post异步请求:json数据格式
+     * <br/>V2
      *
      * @param url
      * @param json
      * @param callback
+     * @return Call
      */
-    public static void doPostAsynData(String url, String json, HttpBaseCallback callback) {
+    public static Call doPostAsynData(String url, String json, HttpBaseCallback callback) {
         if (!checkUrl(url)) {
             if (null != callback) {
                 callback.onFailure(NetCode.CODE_6002, "请求的URL异常:" + url);
             }
-            return;
+            return null;
         }
         if (TextUtils.isEmpty(json)) {
             if (null != callback) {
                 callback.onFailure(NetCode.CODE_6003, "请求的URL异常:" + url);
 
             }
-            return;
+            return null;
         }
-        Request request = OkHttp3Request.builderRequest(OkHttp3Request.HttpMethodType.POST, url, null, json);
-        OkHttp3Request.doPostEnqueue(request, callback);
+        Request request = OkHttp3Request.builderDataRequest(OkHttp3Request.HttpMethodType.POST, url, null, json);
+        return OkHttp3Request.doEnqueue(request, callback);
     }
 
     /**--------------------    文件上传    --------------------**/
-
     /**
+     * 单文件上传：header带参，body带文件流
+     * <br/>V2
+     *
      * @param url      请求地址
      * @param file     上传文件
      * @param callback 请求回调
-     * @Description 单文件上传
+     * @return Call
      */
-    public static void doPostAsynFile(String url, File file, Map<String, String> params, HttpProgressCallback callback) {
+    public static Call doPostAsynFile(String url, File file, Map<String, String> params, HttpProgressCallback callback) {
         if (!checkUrl(url)) {
             if (null != callback) {
                 callback.onFailure(NetCode.CODE_6002, "请求的URL异常:" + url);
             }
-            return;
+            return null;
         }
         if (!FFileUtils.isFileExists(file)) {
             if (null != callback) {
                 callback.onFailure(NetCode.CODE_6004, "上传的文件不存在，请检查...");
             }
-            return;
+            return null;
         }
         Request request = OkHttp3Request.builderFileMapRequest(url, file, params, callback);
-        OkHttp3Request.doPostEnqueue(request, callback);
+        return OkHttp3Request.doEnqueue(request, callback);
     }
+
 
     /**--------------------    文件下载    --------------------**/
     /**
+     * Post异步请求:文件下载
+     * <br/>V2
+     *
      * @param url          请求地址
      * @param destFileDir  目标文件存储的文件夹路径，如：Environment.getExternalStorageDirectory().getAbsolutePath()
-     * @param destFileName 目标文件存储的文件名，如：gson-2.7.jar
+     * @param destFileName 目标文件存储的文件名，如：xxx.apk
      * @param callback     请求回调
      * @Description 文件下载
      */
-    public static Call downloadAsynFile(String url, String destFileDir, String destFileName, OkHttp3CallbackImpl callback) {
-        Request request = OkHttp3Request.builderRequest(OkHttp3Request.HttpMethodType.POST, url, null, null);
+    public static Call doPostAsynDownloadFile(String url, String destFileDir, String destFileName, HttpProgressCallback callback) {
+        Request request = OkHttp3Request.builderDataRequest(OkHttp3Request.HttpMethodType.POST, url, null, null);
         return OkHttp3Request.doDownloadEnqueue(request, destFileDir, destFileName, callback);
     }
-
 }

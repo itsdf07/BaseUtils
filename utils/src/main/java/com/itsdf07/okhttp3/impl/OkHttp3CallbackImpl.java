@@ -4,9 +4,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.itsdf07.alog.ALog;
 import com.itsdf07.okhttp3.NetCode;
-import com.itsdf07.okhttp3.OkHttp3Request;
 import com.itsdf07.okhttp3.bean.OkBaseBean;
 import com.itsdf07.okhttp3.callback.OkHttp3Callback;
 
