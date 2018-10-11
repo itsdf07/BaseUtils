@@ -7,7 +7,7 @@ package com.itsdf07.okhttp3;
  */
 
 public enum NetCode {
-    SUCCESS(200, "请求成功", "...."),
+    SUCCESS(200, "请求成功", ""),
 
     FAILED(6000, "请求失败", ""),
     UNKNOW(6001, "未知错误", ""),
@@ -35,12 +35,12 @@ public enum NetCode {
 
 
     //690_ 开头的为 开头的为Exception 异常
-    CODE_6900(6900, "异常", "Exception"),
-    CODE_6901(6901, "Socket异常", "SocketException"),
-    CODE_6902(6902, "数据解析异常", "JsonSyntaxException"),
-    CODE_6903(6903, "IO异常", "IOException"),
-    CODE_6904(6904, "未知服务器", "UnknownHostException"),
-    CODE_6905(6905, "网络请求超时", "SocketTimeoutException");
+    CODE_6900(6900, "异常", ""),
+    CODE_6901(6901, "Socket异常", ""),
+    CODE_6902(6902, "数据解析异常", ""),
+    CODE_6903(6903, "IO异常", ""),
+    CODE_6904(6904, "未知服务器", ""),
+    CODE_6905(6905, "网络请求超时", "");
 
 
     /**
@@ -98,24 +98,27 @@ public enum NetCode {
         return desc;
     }
 
-    public void setDesc(String desc) {
+    public NetCode setDesc(String desc) {
         this.desc = desc;
+        return this;
     }
 
     public String getCode() {
         return code + "";
     }
 
-    public void setCode(int code) {
+    public NetCode setCode(int code) {
         this.code = code;
+        return this;
     }
 
     public String getInfo() {
         return info;
     }
 
-    public void setInfo(String info) {
+    public NetCode setInfo(String info) {
         this.info = info;
+        return this;
     }
 
     public static void main(String[] args) {

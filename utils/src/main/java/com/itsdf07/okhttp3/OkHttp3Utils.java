@@ -2,7 +2,6 @@ package com.itsdf07.okhttp3;
 
 import android.text.TextUtils;
 
-import com.itsdf07.alog.ALog;
 import com.itsdf07.okhttp3.callback.HttpBaseCallback;
 import com.itsdf07.okhttp3.callback.HttpProgressCallback;
 import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;

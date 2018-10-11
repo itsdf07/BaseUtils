@@ -60,16 +60,17 @@ class OkHttp3Request {
      * 数据请求成功
      * 将http请求成功结果转至主线程
      *
+     * @param tag
      * @param result
      * @param callback
      * @param isDecode
      */
-    public static void sendSuccessResultCallback(final String result, final OkHttp3CallbackImpl callback, final boolean isDecode) {
+    public static void sendSuccessResultCallback(final String tag, final String result, final OkHttp3CallbackImpl callback, final boolean isDecode) {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
                 if (callback != null) {
-                    ALog.dTag(TAG_HTTP, "isDecode:%s,result:%s", isDecode, result);
+                    ALog.dTag(TAG_HTTP, "\nisDecode:%s\ntag:%s\nresult:%s", isDecode, tag, result);
                     callback.onSuccess(result, isDecode);
                     callback.onFinish();
                 }
@@ -89,7 +90,7 @@ class OkHttp3Request {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                ALog.eTag(TAG_HTTP, "NetCode:%s,\nmsg:%s,\ninfo:%s", netCode.getCode(), netCode.getDesc(), netCode.getInfo());
+                ALog.eTag(TAG_HTTP, "NetCode:%s,\ndesc:%s,\ninfo:%s", netCode.getCode(), netCode.getDesc(), netCode.getInfo());
                 if (callback != null) {
                     callback.onFailure(netCode.getCode(), netCode.getDesc());
                     callback.onFinish();
@@ -126,35 +127,32 @@ class OkHttp3Request {
 //                    }
                     netCode = NetCode.CODE_6905;
                 }
-                netCode.setInfo(e.getMessage());
-                sendFailResultCallback(netCode, callback);
+                sendFailResultCallback(netCode.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->:" + e.getMessage()), callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (null == response) {
-                    sendFailResultCallback(NetCode.CODE_6010, callback);
+                    sendFailResultCallback(NetCode.CODE_6010.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->null == response"), callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetCode.CODE_6020, callback);
+                    sendFailResultCallback(NetCode.CODE_6020.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->null == response.body()"), callback);
                     return;
                 }
                 String result = response.body().string();
                 if (TextUtils.isEmpty(result)) {
-                    sendFailResultCallback(NetCode.CODE_6021, callback);
+                    sendFailResultCallback(NetCode.CODE_6021.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->body is empty"), callback);
                     return;
                 }
                 try {
                     if (response.isSuccessful()) {
-                        sendSuccessResultCallback(result, callback, isDecode);
+                        sendSuccessResultCallback(call.request().url().toString(), result, callback, isDecode);
                     } else {
-                        NetCode.CODE_6011.setInfo("code:" + response.code() + ",\nmsg:" + response.message());
-                        sendFailResultCallback(NetCode.CODE_6011, callback);
+                        sendFailResultCallback(NetCode.CODE_6011.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\tcode:" + response.code() + ",\n\t\terr->:" + response.message()), callback);
                     }
                 } catch (Exception e) {
-                    NetCode.CODE_6900.setInfo(e.getMessage());
-                    sendFailResultCallback(NetCode.CODE_6900, callback);
+                    sendFailResultCallback(NetCode.CODE_6900.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->" + e.getMessage()), callback);
                 }
             }
         });
@@ -171,11 +169,11 @@ class OkHttp3Request {
      * @param result
      * @param callback
      */
-    public static void sendSuccessResultCallback(final String result, final HttpBaseCallback callback) {
+    public static void sendSuccessResultCallback(final String tag, final String result, final HttpBaseCallback callback) {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                ALog.dTag(TAG_HTTP, "result:%s", result);
+                ALog.dTag(TAG_HTTP, "\ntag:%s\nresult:%s", tag, result);
                 if (null != callback) {
                     callback.onSuccess(result);
                 }
@@ -194,7 +192,7 @@ class OkHttp3Request {
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                ALog.eTag(TAG_HTTP, "NetCode:%s,\nmsg:%s,\ninfo:%s", netCode.getCode(), netCode.getDesc(), netCode.getInfo());
+                ALog.eTag(TAG_HTTP, "NetCode:%s,\ndesc:%s,\ninfo:%s", netCode.getCode(), netCode.getDesc(), netCode.getInfo());
                 if (null != callback) {
                     callback.onFailure(netCode, netCode.getDesc());
                 }
@@ -365,35 +363,32 @@ class OkHttp3Request {
 //                    }
                     netCode = NetCode.CODE_6905;
                 }
-                netCode.setInfo(e.getMessage());
-                sendFailResultCallback(netCode, callback);
+                sendFailResultCallback(netCode.setInfo("\n\t\ttag:" + request.url().toString() + "\n\t\terr->" + e.getMessage()), callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (null == response) {
-                    sendFailResultCallback(NetCode.CODE_6010, callback);
+                    sendFailResultCallback(NetCode.CODE_6010.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->null == response"), callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetCode.CODE_6020, callback);
+                    sendFailResultCallback(NetCode.CODE_6020.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->null == response.body()"), callback);
                     return;
                 }
                 String result = response.body().string();
                 if (TextUtils.isEmpty(result)) {
-                    sendFailResultCallback(NetCode.CODE_6021, callback);
+                    sendFailResultCallback(NetCode.CODE_6021.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->body is empty"), callback);
                     return;
                 }
                 try {
                     if (response.isSuccessful()) {
-                        sendSuccessResultCallback(result, callback);
+                        sendSuccessResultCallback(request.url().toString(), result, callback);
                     } else {
-                        NetCode.CODE_6011.setInfo("code:" + response.code() + ",\nmsg:" + response.message());
-                        sendFailResultCallback(NetCode.CODE_6011, callback);
+                        sendFailResultCallback(NetCode.CODE_6011.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\tcode:" + response.code() + ",\n\t\terr->:" + response.message()), callback);
                     }
                 } catch (Exception e) {
-                    NetCode.CODE_6900.setInfo(e.getMessage());
-                    sendFailResultCallback(NetCode.CODE_6900, callback);
+                    sendFailResultCallback(NetCode.CODE_6900.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->" + e.getMessage()), callback);
                 }
             }
         });
@@ -431,18 +426,17 @@ class OkHttp3Request {
 //                    }
                     netCode = NetCode.CODE_6905;
                 }
-                netCode.setInfo(e.getMessage());
-                sendFailResultCallback(netCode, callback);
+                sendFailResultCallback(netCode.setInfo("\n\t\ttag:" + request.url().toString() + "\n\t\terr->" + e.getMessage()), callback);
             }
 
             @Override
             public void onResponse(Call call, Response response) {
                 if (null == response) {
-                    sendFailResultCallback(NetCode.CODE_6010, callback);
+                    sendFailResultCallback(NetCode.CODE_6010.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->null == response"), callback);
                     return;
                 }
                 if (null == response.body()) {
-                    sendFailResultCallback(NetCode.CODE_6020, callback);
+                    sendFailResultCallback(NetCode.CODE_6020.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->null == response.body()"), callback);
                     return;
                 }
                 InputStream inputStream = response.body().byteStream();
@@ -472,11 +466,9 @@ class OkHttp3Request {
                     sendProgressResultCallback(currentTotalLen, totalLen, callback, true);
                 } catch (IOException e) {
                     if (e instanceof SocketException) {
-                        NetCode.CODE_6901.setInfo(e.getMessage());
-                        sendFailResultCallback(NetCode.CODE_6901, callback);
+                        sendFailResultCallback(NetCode.CODE_6901.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->" + e.getMessage()), callback);
                     } else {
-                        NetCode.CODE_6903.setInfo(e.getMessage());
-                        sendFailResultCallback(NetCode.CODE_6903, callback);
+                        sendFailResultCallback(NetCode.CODE_6903.setInfo("\n\t\ttag:" + call.request().url().toString() + "\n\t\terr->" + e.getMessage()), callback);
                     }
                 } finally {
                     if (inputStream != null) {
