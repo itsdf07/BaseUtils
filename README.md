@@ -21,7 +21,7 @@
 ```
 * 需要依赖该工具库的Module中的'build.gradle'中添加'compile'依赖
 ```javascript
-    compile('com.itsdf07:utils:1.2.0')
+    compile('com.itsdf07:utils:2.0.2')
             {
                 //去掉重复依赖的包
                 exclude group: 'com.squareup.okhttp3'
