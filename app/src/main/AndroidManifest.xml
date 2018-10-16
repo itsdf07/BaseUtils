@@ -3,6 +3,7 @@
     package="com.itsdf07">
 
     <application
+        android:name=".fcommon.FApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -23,7 +24,6 @@
         <activity
             android:name=".TestActivity"
             android:process=":remote"></activity>
-        <activity android:name=".debug.TcpDebugActivity" />
 
         <receiver
             android:name=".NetWorkChangeReceiver"
