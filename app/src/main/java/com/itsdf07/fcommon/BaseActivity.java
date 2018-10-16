@@ -38,8 +38,8 @@ public class BaseActivity extends AppCompatActivity implements IBaseView {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         ALog.d("%s:执行了onDestroy ...", this);
+        super.onDestroy();
     }
 
     @Override

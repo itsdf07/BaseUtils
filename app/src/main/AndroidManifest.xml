@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".fcommon.example.ExampleActivity"/>
         <activity
             android:name=".TestActivity"
             android:process=":remote"></activity>
