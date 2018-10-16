@@ -7,15 +7,15 @@
     tools:context="com.itsdf07.MainActivity">
 
     <Button
+        android:id="@+id/goto_siminfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sim卡信息获取" />
+
+    <Button
         android:id="@+id/btnTestClick"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="点击测试" />
-
-    <Button
-        android:id="@+id/btnTcpDebug"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TCP协议调试" />
 
 </LinearLayout>
