@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Utils</string>
+
+    <string name="ftip_net_error">网络异常,请稍后再试</string>
+    <string name="ftip_file_md5_error">文件损坏，请重新下载</string>
+    <string name="ftip_reuqest_cancel">请求已取消</string>
+    <string name="ftip_loading">加载中，请稍候...</string>
+    <string name="ftip_modifying">修改中，请稍候...</string>
+    <string name="fconfirm">确定</string>
+    <string name="fcancle">取消</string>
 </resources>
