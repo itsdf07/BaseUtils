@@ -1,5 +1,7 @@
 package com.itsdf07.fcommon.mvp;
 
+import android.app.Activity;
+
 /**
  * @Description
  * @Author itsdf07
@@ -9,6 +11,7 @@ public abstract class BasePresenter<V, M> {
 
     public M mModel;
     public V mView;
+    public Activity mActivity;
 
     public void setVM(V v, M m) {
         this.mView = v;
@@ -28,5 +31,6 @@ public abstract class BasePresenter<V, M> {
     public void onPDestroy() {
         this.mView = null;
         this.mModel = null;
+        this.mActivity = null;
     }
 }

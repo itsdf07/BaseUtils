@@ -18,7 +18,6 @@ import butterknife.Unbinder;
 public abstract class BaseMvpActivity<P extends BasePresenter, M extends IBaseModel> extends BaseActivity {
     public P presenter;
     public M model;
-
     Unbinder unbinder;
 
     @Override
@@ -31,6 +30,7 @@ public abstract class BaseMvpActivity<P extends BasePresenter, M extends IBaseMo
         unbinder = ButterKnife.bind(this);
         presenter = FUtils.getT(this, 0);
         model = FUtils.getT(this, 1);
+        presenter.mActivity = this;
         this.initPresenter();
         this.initView();
         this.initDataAfterView();
@@ -40,7 +40,13 @@ public abstract class BaseMvpActivity<P extends BasePresenter, M extends IBaseMo
     protected void onDestroy() {
         if (null != unbinder) {
             unbinder.unbind();
+            unbinder = null;
         }
+        if (null != presenter) {
+            presenter.onPDestroy();
+            presenter = null;
+        }
+
         super.onDestroy();
     }
 

@@ -21,7 +21,7 @@ public class ExampleActivity extends BaseMvpActivity<ExamplePresenterImpl, Examp
 
     @Override
     public void initPresenter() {
-
+        presenter.setVM(this, model);
     }
 
     @Override

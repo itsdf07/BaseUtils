@@ -4,19 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.itsdf07.alog.ALog;
 import com.itsdf07.dialog.FCustomDialog;
 import com.itsdf07.entity.FAppInfo;
 import com.itsdf07.fcommon.BaseActivity;
-import com.itsdf07.fcommon.example.ExampleActivity;
 import com.itsdf07.okhttp3.NetCode;
 import com.itsdf07.okhttp3.OkHttp3Utils;
 import com.itsdf07.okhttp3.bean.OkBaseBean;
 import com.itsdf07.okhttp3.callback.HttpBaseCallback;
 import com.itsdf07.okhttp3.callback.HttpProgressCallback;
 import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
+import com.itsdf07.sim.SimMvpActivity;
 import com.itsdf07.utils.FAppInfoUtils;
 import com.itsdf07.utils.FFileUtils;
 import com.itsdf07.utils.FMD5Utils;
@@ -182,7 +181,7 @@ public class MainActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.goto_siminfo:
-                startActivity(new Intent(this, ExampleActivity.class));
+                startActivity(new Intent(this, SimMvpActivity.class));
                 break;
         }
     }

@@ -21,7 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".fcommon.example.ExampleActivity"/>
+        <activity
+            android:name=".fcommon.example.ExampleActivity"
+            android:label="" />
+        <activity
+            android:name=".sim.SimMvpActivity"
+            android:label="Sim卡信息详情" />
         <activity
             android:name=".TestActivity"
             android:process=":remote"></activity>
