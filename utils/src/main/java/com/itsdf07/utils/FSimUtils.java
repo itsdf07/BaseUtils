@@ -1,7 +1,10 @@
 package com.itsdf07.utils;
 
 import android.content.Context;
+import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.telephony.cdma.CdmaCellLocation;
+import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 
 import com.itsdf07.alog.ALog;
@@ -9,6 +12,12 @@ import com.itsdf07.alog.ALog;
 /**
  * @Description: Sim卡相关信息工具类，如
  * 1、设备的SIM卡状态
+ * <p>
+ * MCC，Mobile Country Code，移动国家代码（中国的为460）；
+ * MNC，Mobile Network Code，移动网络号码（中国移动为0，中国联通为1，中国电信为2）； 
+ * LAC，Location Area Code，位置区域码；
+ * CID，Cell Identity，基站编号；
+ * BSSS，Base station signal strength，基站信号强度。
  * @Author itsdf07
  * @Time 2018/7/9 14:48
  */
@@ -87,7 +96,7 @@ public class FSimUtils {
     }
 
     /**
-     * 获取网络运营商代码
+     * 获取网络运营商代码,MCC + MNC,如：46000
      *
      * @param context
      * @return
@@ -117,6 +126,56 @@ public class FSimUtils {
         TelephonyManager tm = getTM(context);
         String networkOperatorName = tm.getNetworkOperatorName();
         return TextUtils.isEmpty(networkOperatorName) ? "无法取得网络运营商名称" : networkOperatorName;
+    }
+
+    /**
+     * 中国移动和中国联通获取LAC、CID的方式
+     *
+     * @param context
+     * @return
+     */
+    public static GsmCellLocation getGsmCellLocation(Context context) {
+        // 中国移动和中国联通获取LAC、CID的方式
+        GsmCellLocation location = (GsmCellLocation) getTM(context).getCellLocation();
+        return location;
+    }
+
+    /**
+     * 中国电信获取LAC、CID的方式
+     *
+     * @param context
+     * @return
+     */
+    public static CdmaCellLocation getCdmaCellLocation(Context context) {
+        // 中国电信获取LAC、CID的方式
+        CdmaCellLocation location = (CdmaCellLocation) getTM(context).getCellLocation();
+        return location;
+    }
+
+    /**
+     * 封装在PhoneStateListener类中
+     * LISTEN_NONE：停止监听更新（一般onPause方法中把所有的监听关闭掉）；
+     * <p>
+     * LISTEN_SERVICE_STATE：监听网络服务状态的变化；
+     * <p>
+     * LISTEN_SIGNAL_STRENGTH：监听网络信号强度的变化（单个）；
+     * <p>
+     * LISTEN_SIGNAL_STRENGTHS：监听网络信号强度的变化（多个）；
+     * <p>
+     * LISTEN_MESSAGE_WAITING_INDICATOR：监听消息的变化指标；
+     * <p>
+     * LISTEN_CALL_FORWARDING_INDICATOR：监听呼叫转移的变化指标；
+     * <p>
+     * LISTEN_CELL_LOCATION：监听设备的位置变化。请注意,这将导致频繁的回调侦听器；
+     * <p>
+     * LISTEN_CALL_STATE：监听设备呼叫状态的变化
+     *
+     * @param context
+     * @param listener
+     * @param events
+     */
+    public static void listenPhoneState(Context context, PhoneStateListener listener, int events) {
+        getTM(context).listen(listener, events);
     }
 
     /**

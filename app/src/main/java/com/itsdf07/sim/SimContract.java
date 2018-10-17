@@ -1,6 +1,8 @@
 package com.itsdf07.sim;
 
 import android.content.Context;
+import android.location.Location;
+import android.telephony.CellLocation;
 
 import com.itsdf07.fcommon.IBaseView;
 import com.itsdf07.fcommon.mvp.BasePresenter;
@@ -19,6 +21,10 @@ public interface SimContract {
          * @param info
          */
         void displaySimInfo(String info);
+
+        void displayBaseLocation(CellLocation location);
+
+        void displaySignalStrength(String signalStrength);
 
     }
 

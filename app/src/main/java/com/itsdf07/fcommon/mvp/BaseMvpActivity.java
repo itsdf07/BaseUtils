@@ -37,6 +37,30 @@ public abstract class BaseMvpActivity<P extends BasePresenter, M extends IBaseMo
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (null != presenter) {
+            presenter.onPStart();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (null != presenter) {
+            presenter.onPResume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (null != presenter) {
+            presenter.onPPause();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         if (null != unbinder) {
             unbinder.unbind();
