@@ -3,12 +3,15 @@ package com.itsdf07.sim;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.telephony.CellLocation;
+import android.telephony.NeighboringCellInfo;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
-import android.widget.Toast;
 
 import com.itsdf07.alog.ALog;
 import com.itsdf07.utils.FSimUtils;
+
+import java.util.List;
+
 
 /**
  * @Description
@@ -28,7 +31,11 @@ public class SimPresenterImpl extends SimContract.Presenter {
     public void onPResume() {
         super.onPResume();
         FSimUtils.listenPhoneState(mActivity, new MyPhoneStateListener(),
-                PhoneStateListener.LISTEN_SIGNAL_STRENGTHS | PhoneStateListener.LISTEN_CELL_LOCATION);
+                PhoneStateListener.LISTEN_SIGNAL_STRENGTHS
+                        | PhoneStateListener.LISTEN_CELL_LOCATION
+                        | PhoneStateListener.LISTEN_SERVICE_STATE);
+//        FSimUtils.listenPhoneState(mActivity, new MyPhoneStateListener(),
+//                PhoneStateListener.LISTEN_SIGNAL_STRENGTHS | PhoneStateListener.LISTEN_CELL_LOCATION);
     }
 
     @Override
@@ -50,8 +57,30 @@ public class SimPresenterImpl extends SimContract.Presenter {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength) {
             super.onSignalStrengthsChanged(signalStrength);
-            ALog.dTag("Signal", "signalStrength:%s", signalStrength.toString());
-            mView.displaySignalStrength(signalStrength.toString() + "\nLevel:" + signalStrength.getLevel());
+//            Method method1 = null;
+//
+//            try {
+//                method1 = signalStrength.getClass().getMethod("getAsuLevel");
+//                int dbm = (Integer) method1.invoke(signalStrength);
+//                ALog.dTag("Signal", "dbm:%s", dbm);
+//            } catch (NoSuchMethodException e) {
+//                e.printStackTrace();
+//            } catch (InvocationTargetException e) {
+//                e.printStackTrace();
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            }
+
+
+            StringBuffer sb = new StringBuffer();
+            List<NeighboringCellInfo> list = FSimUtils.getNeighboringCellInfos(mActivity);
+            for (NeighboringCellInfo info : list) {
+                sb.append("NetWorkType:" + info.getNetworkType() + "\n").append("Cid:" + info.getCid() + "\n").append("Lac:" + info.getLac() + "\n").append("Psc" + info.getPsc() + "\n").append(info.getRssi() + "\n");
+            }
+            sb.append(signalStrength.toString() + "\nLevel:" + signalStrength.getLevel());
+            ALog.dTag("Signal", "signalStrength:%s", sb.toString());
+            mView.displaySignalStrength(sb.toString());
+
 //            mView.displaySignalStrength("GsmSinnalStrength:" + signalStrength.getGsmSignalStrength() + "\n"
 //                    + "GsmBitErrorRate:" + signalStrength.getGsmBitErrorRate() + "\n"
 //                    + "CdmaDbm:" + signalStrength.getCdmaDbm() + "\n"
