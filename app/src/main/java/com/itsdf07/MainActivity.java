@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.itsdf07.alog.ALog;
 import com.itsdf07.dialog.FCustomDialog;
@@ -20,6 +21,7 @@ import com.itsdf07.utils.FAppInfoUtils;
 import com.itsdf07.utils.FFileUtils;
 import com.itsdf07.utils.FMD5Utils;
 import com.itsdf07.utils.FSimUtils;
+import com.itsdf07.widget.FTitlebarView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,12 +40,31 @@ public class MainActivity extends BaseActivity {
     private FCustomDialog.Builder builder;
     private FCustomDialog mDialog;
 
+    private void init() {
+        FTitlebarView titlebarView = (FTitlebarView) findViewById(R.id.title);
+        titlebarView.setTitleSize(20);
+        titlebarView.setTitle("标题栏");
+        titlebarView.setRightDrawable(0);
+        titlebarView.setRightText("");
+        titlebarView.setOnViewClick(new FTitlebarView.onViewClick() {
+            @Override
+            public void leftClick(View view) {
+                Toast.makeText(MainActivity.this, "左边", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void rightClick(View view) {
+                Toast.makeText(MainActivity.this, "右边", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        init();
         findViewById(R.id.btnTestClick).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
