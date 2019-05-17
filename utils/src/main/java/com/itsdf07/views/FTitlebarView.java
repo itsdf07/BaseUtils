@@ -1,9 +1,8 @@
-package com.itsdf07.widget;
+package com.itsdf07.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;

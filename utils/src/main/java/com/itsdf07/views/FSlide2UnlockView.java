@@ -1,4 +1,4 @@
-package com.itsdf07.widget;
+package com.itsdf07.views;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;

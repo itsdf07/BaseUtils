@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.itsdf07.alog.ALog;
 import com.itsdf07.dialog.FCustomDialog;
 import com.itsdf07.entity.FAppInfo;
+import com.itsdf07.example.Slide2UnlockActivity;
 import com.itsdf07.fcommon.BaseActivity;
 import com.itsdf07.okhttp3.NetCode;
 import com.itsdf07.okhttp3.OkHttp3Utils;
@@ -21,7 +22,7 @@ import com.itsdf07.utils.FAppInfoUtils;
 import com.itsdf07.utils.FFileUtils;
 import com.itsdf07.utils.FMD5Utils;
 import com.itsdf07.utils.FSimUtils;
-import com.itsdf07.widget.FTitlebarView;
+import com.itsdf07.views.FTitlebarView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -198,11 +199,14 @@ public class MainActivity extends BaseActivity {
 //
     }
 
-    @OnClick({R.id.goto_siminfo})
+    @OnClick({R.id.goto_siminfo, R.id.id_ui})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.goto_siminfo:
                 startActivity(new Intent(this, SimMvpActivity.class));
+                break;
+            case R.id.id_ui:
+                startActivity(new Intent(MainActivity.this, Slide2UnlockActivity.class));
                 break;
         }
     }

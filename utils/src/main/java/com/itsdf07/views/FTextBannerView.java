@@ -1,4 +1,4 @@
-package com.itsdf07.widget;
+package com.itsdf07.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;

@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context="com.itsdf07.MainActivity">
 
-    <com.itsdf07.widget.FTitlebarView
+    <com.itsdf07.views.FTitlebarView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -32,5 +32,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="点击测试" />
+
+    <Button
+        android:id="@+id/id_ui"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="自定义UI" />
 
 </LinearLayout>
