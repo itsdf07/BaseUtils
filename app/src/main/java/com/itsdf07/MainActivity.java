@@ -199,13 +199,13 @@ public class MainActivity extends BaseActivity {
 //
     }
 
-    @OnClick({R.id.goto_siminfo, R.id.id_ui})
+    @OnClick({R.id.id_uis, R.id.id_utils})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.goto_siminfo:
-                startActivity(new Intent(this, SimMvpActivity.class));
+            case R.id.id_uis:
+                startActivity(new Intent(MainActivity.this, Slide2UnlockActivity.class));
                 break;
-            case R.id.id_ui:
+            case R.id.id_utils:
                 startActivity(new Intent(MainActivity.this, Slide2UnlockActivity.class));
                 break;
         }

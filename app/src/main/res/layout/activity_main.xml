@@ -34,7 +34,13 @@
         android:text="点击测试" />
 
     <Button
-        android:id="@+id/id_ui"
+        android:id="@+id/id_uis"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="自定义UI" />
+
+    <Button
+        android:id="@+id/id_utils"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="自定义UI" />
