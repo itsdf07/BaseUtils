@@ -35,17 +35,71 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 
 public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {
     private static final String TAG = "MainActivity";
+    private Unbinder unbinder;
     @BindView(R.id.id_demos)
     ListView mDemoList;
-
     private FCustomDialog.Builder builder;
     private FCustomDialog mDialog;
 
     private DemoListAdapter mDemoListAdapter;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        unbinder = ButterKnife.bind(this);
+        init();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (null != unbinder) {
+            unbinder.unbind();
+        }
+        super.onDestroy();
+    }
+
+    @OnClick({R.id.id_test})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.id_test:
+                onTest();
+                break;
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
+                startActivity(new Intent(MainActivity.this, Slide2UnlockActivity.class));
+                break;
+            case 1:
+
+                break;
+            case 2:
+
+                break;
+            default:
+                break;
+        }
+    }
 
     private void init() {
         FTitlebarView titlebarView = (FTitlebarView) findViewById(R.id.title);
@@ -64,6 +118,14 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                 Toast.makeText(MainActivity.this, "右边", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        builder = new FCustomDialog.Builder(this);
+//        ivImg = (ImageView) findViewById(R.id.iv_img);
+//        ColorMatrix cm = new ColorMatrix();
+//        cm.setSaturation(0); // 设置饱和度
+//        ColorMatrixColorFilter grayColorFilter = new ColorMatrixColorFilter(cm);
+//        ivImg.setColorFilter(grayColorFilter); // 如果想恢复彩色显示，设置为null即可
 
         mDemoList.setOnItemClickListener(this);
         mDemoListAdapter = new DemoListAdapter(this);
@@ -99,45 +161,26 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         return demos;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        init();
-        findViewById(R.id.id_test).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String testStr = ExampleTest.testString("这是测试是否成功依赖utils库");
-                ALog.dTag(TAG, "testStr:%s", testStr);
-                String vc = FAppInfoUtils.getVersionName(MainActivity.this);
-                String vn = FAppInfoUtils.getVersionCode(MainActivity.this) + "";
-                String metaData = FAppInfoUtils.getAppMetaData(MainActivity.this, "TEST_CHANNEL");
-                ALog.dTag(TAG, "当前vn:%s,vc:%s,metaData:%s", vn, vc, metaData);
-                ArrayList<FAppInfo> appInfos = FAppInfoUtils.getInstallApps(MainActivity.this);
-                FAppInfo appInfo = FAppInfoUtils.getInstallApp(MainActivity.this, "com.rchat.remote");
-                ALog.dTag(TAG, "appInfos:%s,appInfo:%s", (null == appInfos ? "appInfos为null" : appInfos.size()), (null == appInfo ? "appInfo为null" : appInfo.toString()));
+    private void onTest() {
+        String testStr = ExampleTest.testString("这是测试是否成功依赖utils库");
+        ALog.dTag(TAG, "testStr:%s", testStr);
+        String vc = FAppInfoUtils.getVersionName(MainActivity.this);
+        String vn = FAppInfoUtils.getVersionCode(MainActivity.this) + "";
+        String metaData = FAppInfoUtils.getAppMetaData(MainActivity.this, "TEST_CHANNEL");
+        ALog.dTag(TAG, "当前vn:%s,vc:%s,metaData:%s", vn, vc, metaData);
+        ArrayList<FAppInfo> appInfos = FAppInfoUtils.getInstallApps(MainActivity.this);
+        FAppInfo appInfo = FAppInfoUtils.getInstallApp(MainActivity.this, "com.rchat.remote");
+        ALog.dTag(TAG, "appInfos:%s,appInfo:%s", (null == appInfos ? "appInfos为null" : appInfos.size()), (null == appInfo ? "appInfo为null" : appInfo.toString()));
 
-                int simState = FSimUtils.getSimState(MainActivity.this);
-                ALog.dTag(TAG, "SimState:%s - %s", simState, FSimUtils.translateSimState(simState));
+        int simState = FSimUtils.getSimState(MainActivity.this);
+        ALog.dTag(TAG, "SimState:%s - %s", simState, FSimUtils.translateSimState(simState));
 
-                ALog.dTag(TAG, "Sim卡号:%s", FSimUtils.getSimSerialNumber(MainActivity.this));
-                ALog.dTag(TAG, "Sim供货商:%s(代号:%s)", FSimUtils.getSimOperatorName(MainActivity.this), FSimUtils.getSimOperator(MainActivity.this));
-                ALog.dTag(TAG, "Sim运营商:%s(代号:%s)", FSimUtils.getNetworkOperatorName(MainActivity.this), FSimUtils.getNetworkOperator(MainActivity.this));
+        ALog.dTag(TAG, "Sim卡号:%s", FSimUtils.getSimSerialNumber(MainActivity.this));
+        ALog.dTag(TAG, "Sim供货商:%s(代号:%s)", FSimUtils.getSimOperatorName(MainActivity.this), FSimUtils.getSimOperator(MainActivity.this));
+        ALog.dTag(TAG, "Sim运营商:%s(代号:%s)", FSimUtils.getNetworkOperatorName(MainActivity.this), FSimUtils.getNetworkOperator(MainActivity.this));
 //                onHttpDebug();
-                doPostAsny();
+        doPostAsny();
 //                doPostAsnyFile();
-            }
-        });
-
-        builder = new FCustomDialog.Builder(this);
-//        ivImg = (ImageView) findViewById(R.id.iv_img);
-//        ColorMatrix cm = new ColorMatrix();
-//        cm.setSaturation(0); // 设置饱和度
-//        ColorMatrixColorFilter grayColorFilter = new ColorMatrixColorFilter(cm);
-//        ivImg.setColorFilter(grayColorFilter); // 如果想恢复彩色显示，设置为null即可
-
-
     }
 
     private void showSingleButtonDialog(String alertText, String btnText, View.OnClickListener onClickListener) {
@@ -238,25 +281,5 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 //
     }
 
-    @OnClick({R.id.id_test})
-    public void onViewClicked(View view) {
-        Toast.makeText(this, "用来调试的按钮", Toast.LENGTH_SHORT).show();
-    }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch (position) {
-            case 0:
-                startActivity(new Intent(MainActivity.this, Slide2UnlockActivity.class));
-                break;
-            case 1:
-
-                break;
-            case 2:
-
-                break;
-            default:
-                break;
-        }
-    }
 }
