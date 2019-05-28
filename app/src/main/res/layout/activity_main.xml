@@ -21,28 +21,15 @@
         app:rightText="语音"
         app:rightTextColor="#FFF" />
 
-    <Button
-        android:id="@+id/goto_siminfo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sim卡信息获取" />
 
     <Button
-        android:id="@+id/btnTestClick"
+        android:id="@+id/id_test"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="点击测试" />
 
-    <Button
-        android:id="@+id/id_uis"
+    <ListView
+        android:id="@+id/id_demos"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="自定义UI" />
-
-    <Button
-        android:id="@+id/id_utils"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="自定义UI" />
-
+        android:layout_height="match_parent" />
 </LinearLayout>

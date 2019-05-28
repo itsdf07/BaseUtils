@@ -3,10 +3,13 @@ package com.itsdf07;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.itsdf07.adapter.DemoListAdapter;
 import com.itsdf07.alog.ALog;
+import com.itsdf07.bean.ItemDemoCaseBean;
 import com.itsdf07.dialog.FCustomDialog;
 import com.itsdf07.entity.FAppInfo;
 import com.itsdf07.example.Slide2UnlockActivity;
@@ -17,7 +20,6 @@ import com.itsdf07.okhttp3.bean.OkBaseBean;
 import com.itsdf07.okhttp3.callback.HttpBaseCallback;
 import com.itsdf07.okhttp3.callback.HttpProgressCallback;
 import com.itsdf07.okhttp3.impl.OkHttp3CallbackImpl;
-import com.itsdf07.sim.SimMvpActivity;
 import com.itsdf07.utils.FAppInfoUtils;
 import com.itsdf07.utils.FFileUtils;
 import com.itsdf07.utils.FMD5Utils;
@@ -27,6 +29,7 @@ import com.itsdf07.views.FTitlebarView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -34,12 +37,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {
     private static final String TAG = "MainActivity";
-    @BindView(R.id.goto_siminfo)
-    Button gotoSiminfo;
+    @BindView(R.id.id_demos)
+    ListView mDemoList;
+
     private FCustomDialog.Builder builder;
     private FCustomDialog mDialog;
+
+    private DemoListAdapter mDemoListAdapter;
 
     private void init() {
         FTitlebarView titlebarView = (FTitlebarView) findViewById(R.id.title);
@@ -58,6 +64,39 @@ public class MainActivity extends BaseActivity {
                 Toast.makeText(MainActivity.this, "右边", Toast.LENGTH_SHORT).show();
             }
         });
+
+        mDemoList.setOnItemClickListener(this);
+        mDemoListAdapter = new DemoListAdapter(this);
+        mDemoListAdapter.setData(initDemosData());
+        mDemoList.setAdapter(mDemoListAdapter);
+
+    }
+
+    /**
+     * 初始化Demo数据源
+     *
+     * @return
+     */
+    private List<ItemDemoCaseBean> initDemosData() {
+        List<ItemDemoCaseBean> demos = new ArrayList<>();
+        String[] titleDatas = {"自定义UI", "封装Tools"};
+        String[] descDatas = {"高级UI，实现手动绘制过程", "日常Tools积累，方便快捷实现功能"};
+        if (titleDatas.length != descDatas.length) {
+            ItemDemoCaseBean bean = new ItemDemoCaseBean();
+            bean.setIcon(R.mipmap.ic_launcher_round);
+            bean.setTitle("数据异常");
+            bean.setDesc("数据对照长度异常，请检查数据源！");
+            demos.add(bean);
+            return demos;
+        }
+        for (int i = 0; i < titleDatas.length; i++) {
+            ItemDemoCaseBean bean = new ItemDemoCaseBean();
+            bean.setIcon(R.mipmap.ic_launcher_round);
+            bean.setTitle(titleDatas[i]);
+            bean.setDesc(descDatas[i]);
+            demos.add(bean);
+        }
+        return demos;
     }
 
     @Override
@@ -66,7 +105,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         init();
-        findViewById(R.id.btnTestClick).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.id_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String testStr = ExampleTest.testString("这是测试是否成功依赖utils库");
@@ -199,14 +238,24 @@ public class MainActivity extends BaseActivity {
 //
     }
 
-    @OnClick({R.id.id_uis, R.id.id_utils})
+    @OnClick({R.id.id_test})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.id_uis:
+        Toast.makeText(this, "用来调试的按钮", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
                 startActivity(new Intent(MainActivity.this, Slide2UnlockActivity.class));
                 break;
-            case R.id.id_utils:
-                startActivity(new Intent(MainActivity.this, Slide2UnlockActivity.class));
+            case 1:
+
+                break;
+            case 2:
+
+                break;
+            default:
                 break;
         }
     }
